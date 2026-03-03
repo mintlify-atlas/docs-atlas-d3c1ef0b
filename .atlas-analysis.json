@@ -1,0 +1,87 @@
+{
+  "projectType": "cli-tool",
+  "projectName": "EZFile",
+  "projectDescription": "W-2 tax filing assistant powered by Claude Code that calculates Form 1040 line by line for single filers",
+  "theme": "almond",
+  "primaryColor": "#2E7D32",
+  "lightColor": "#66BB6A",
+  "darkColor": "#1B5E20",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "installation",
+              "quickstart"
+            ]
+          },
+          {
+            "group": "Commands",
+            "pages": [
+              "commands/file-taxes",
+              "commands/add-1098e",
+              "commands/calculate",
+              "commands/review",
+              "commands/explain",
+              "commands/checklist"
+            ]
+          },
+          {
+            "group": "Guides",
+            "pages": [
+              "guides/who-can-use",
+              "guides/understanding-your-return",
+              "guides/filing-instructions",
+              "guides/state-taxes",
+              "guides/privacy-security"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Tax Reference",
+        "groups": [
+          {
+            "group": "Tax Year 2025",
+            "pages": [
+              "reference/tax-brackets",
+              "reference/deductions",
+              "reference/credits",
+              "reference/schedule-1a"
+            ]
+          },
+          {
+            "group": "Forms & Fields",
+            "pages": [
+              "reference/form-1040",
+              "reference/w2-boxes",
+              "reference/free-file-guide"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "W-2 PDF/image parsing and validation",
+    "Complete Form 1040 line-by-line calculation",
+    "Student loan interest deduction (Schedule 1)",
+    "Schedule 1-A deductions (tips, overtime, car loan, senior)",
+    "Saver's Credit and Earned Income Credit",
+    "State tax estimates for all 50 states + DC, PR, USVI",
+    "Privacy-first design with SSN masking and local-only processing",
+    "Step-by-step filing guide for Free File Fillable Forms"
+  ],
+  "publicApiSurface": [
+    "/ezfile:file-taxes <path>",
+    "/ezfile:add-1098e <amount|path>",
+    "/ezfile:calculate",
+    "/ezfile:review",
+    "/ezfile:explain <topic>",
+    "/ezfile:checklist"
+  ]
+}
