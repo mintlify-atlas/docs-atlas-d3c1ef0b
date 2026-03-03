@@ -1,0 +1,73 @@
+---
+title: "2025 Standard Deductions"
+description: "Standard deduction amounts and student loan interest deduction for 2025"
+---
+
+# 2025 Standard Deductions
+
+This page covers the standard deduction amounts and the student loan interest deduction for single filers in 2025.
+
+## Standard Deduction by Age and Situation
+
+The standard deduction varies based on age and whether the filer is blind:
+
+| Situation | Amount |
+|---|---|
+| Single, under 65 | **$15,750** |
+| Single, 65 or older | **$17,750** ($15,750 + $2,000 additional) |
+| Single, blind | **$17,750** ($15,750 + $2,000 additional) |
+| Single, 65+ AND blind | **$19,750** ($15,750 + $2,000 + $2,000) |
+
+<Note>
+The "65 or older" threshold for 2025 applies to filers born before January 2, 1961.
+</Note>
+
+## Form Selection
+
+The form you use depends on your age:
+
+| Form | Who Uses It |
+|---|---|
+| Form 1040 | Filers under 65 |
+| Form 1040-SR | Filers 65 or older (born before Jan 2, 1961) |
+
+Both forms have identical line numbers and calculations. Form 1040-SR has larger print and a standard deduction chart on the form itself.
+
+## Student Loan Interest Deduction
+
+The student loan interest deduction is an above-the-line deduction that reduces your adjusted gross income (AGI).
+
+### Parameters
+
+| Parameter | Value |
+|---|---|
+| Maximum deduction | $2,500 |
+| Phaseout start (Single) | $85,000 MAGI |
+| Phaseout end (Single) | $100,000 MAGI |
+| Phaseout range | $15,000 |
+| Form line | Schedule 1, Part II, Line 21 |
+
+### Phaseout Formula
+
+The deduction is calculated based on your Modified Adjusted Gross Income (MAGI):
+
+```python
+if MAGI <= 85,000:
+    deduction = min(interest_paid, 2500)
+elif MAGI >= 100,000:
+    deduction = 0
+else:
+    ratio = (MAGI - 85,000) / 15,000
+    deduction = min(interest_paid, 2500) * (1 - ratio)
+    deduction = round(deduction, 2)
+```
+
+### How It Works
+
+1. If your MAGI is $85,000 or less, you get the full deduction (up to $2,500 of interest paid)
+2. If your MAGI is between $85,000 and $100,000, the deduction phases out proportionally
+3. If your MAGI is $100,000 or more, you get no deduction
+
+<Warning>
+The student loan interest deduction is claimed on Schedule 1, Part II, Line 21 and reduces your AGI. It is NOT part of the standard deduction.
+</Warning>

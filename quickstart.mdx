@@ -1,80 +1,162 @@
 ---
-title: "Quickstart"
-description: "Start building awesome documentation in minutes"
+title: 'Quick Start'
+description: 'Process a sample W-2 and see your first tax calculation in under 2 minutes'
 ---
 
-## Get started in three steps
+## Try EZFile with Sample Data
 
-Get your documentation site running locally and make your first customization.
-
-### Step 1: Set up your local environment
-
-<AccordionGroup>
-  <Accordion icon="copy" title="Clone your docs locally">
-    During the onboarding process, you created a GitHub repository with your docs content if you didn't already have one. You can find a link to this repository in your [dashboard](https://dashboard.mintlify.com).
-    
-    To clone the repository locally so that you can make and preview changes to your docs, follow the [Cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) guide in the GitHub docs.
-  </Accordion>
-  <Accordion icon="rectangle-terminal" title="Start the preview server">
-    1. Install the Mintlify CLI: `npm i -g mint`
-    2. Navigate to your docs directory and run: `mint dev`
-    3. Open `http://localhost:3000` to see your docs live!
-    
-    <Tip>Your preview updates automatically as you edit files.</Tip>
-  </Accordion>
-</AccordionGroup>
-
-### Step 2: Deploy your changes
-
-<AccordionGroup>
-  <Accordion icon="github" title="Install our GitHub app">
-    Install the Mintlify GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app).
-    
-    Our GitHub app automatically deploys your changes to your docs site, so you don't need to manage deployments yourself.
-</Accordion>
-<Accordion icon="palette" title="Update your site name and colors">
-    For a first change, let's update the name and colors of your docs site.
-
-    1. Open `docs.json` in your editor.
-    2. Change the `"name"` field to your project name.
-    3. Update the `"colors"` to match your brand.
-    4. Save and see your changes instantly at `http://localhost:3000`.
-
-    <Tip>Try changing the primary color to see an immediate difference!</Tip>
-  </Accordion>
-</AccordionGroup>
-
-### Step 3: Go live
-
-<Accordion icon="rocket" title="Publish your docs">
-  1. Commit and push your changes.
-  2. Your docs will update and be live in moments!
-</Accordion>
-
-## Next steps
-
-Now that you have your docs running, explore these key features:
-
-<CardGroup cols={2}>
-
-<Card title="Write Content" icon="pen-to-square" href="/essentials/markdown">
-  Learn MDX syntax and start writing your documentation.
-</Card>
-
-<Card title="Customize style" icon="palette" href="/essentials/settings">
-  Make your docs match your brand perfectly.
-</Card>
-
-<Card title="Add code examples" icon="square-code" href="/essentials/code">
-  Include syntax-highlighted code blocks.
-</Card>
-
-<Card title="API documentation" icon="code" href="/api-reference/introduction">
-  Auto-generate API docs from OpenAPI specs.
-</Card>
-
-</CardGroup>
+EZFile includes a sample W-2 with fictional data so you can test the plugin without using real tax documents. You'll see exactly how EZFile processes a W-2 and calculates a complete federal return.
 
 <Note>
-  **Need help?** See our [full documentation](https://mintlify.com/docs) or join our [community](https://mintlify.com/community).
+  The sample W-2 contains completely fictional data — no real personal information.
 </Note>
+
+## Process the Sample W-2
+
+<Steps>
+  <Step title="Run the file-taxes command">
+    If you installed from the repository:
+    ```bash
+    /ezfile:file-taxes ~/ezfile/Sample-W2.pdf
+    ```
+    
+    If you installed from the marketplace, first download the sample:
+    ```bash
+    curl -o ~/Sample-W2.pdf https://raw.githubusercontent.com/stat-guy/ezFile/main/Sample-W2.pdf
+    /ezfile:file-taxes ~/Sample-W2.pdf
+    ```
+  </Step>
+  
+  <Step title="Review the W-2 extraction">
+    EZFile will read the W-2 and display the extracted information:
+    
+    - Employer name (University of Pittsburgh)
+    - Wages from Box 1
+    - Federal tax withheld from Box 2
+    - Social Security Number (masked to last 4 digits)
+    - State and local information
+  </Step>
+  
+  <Step title="Answer intake questions">
+    EZFile will ask a few questions to complete your return:
+    
+    - Date of birth
+    - Student loan interest (if any)
+    - Tips at work
+    - Overtime pay
+    - New car purchase in 2025
+    
+    For the sample W-2, you can provide realistic fictional answers to see how they affect the calculation.
+  </Step>
+  
+  <Step title="View your calculated return">
+    EZFile calculates your complete Form 1040 line by line:
+    
+    ```
+    FEDERAL RETURN SUMMARY
+    Wages:                    $XX,XXX.XX
+    Student loan interest:    -$X,XXX.XX
+    AGI:                      $XX,XXX.XX
+    Standard deduction:      -$15,750.00
+    Taxable income:           $XX,XXX.XX
+
+    Tax:
+      10% on $X,XXX:          $X,XXX.XX
+      12% on $X,XXX:          $X,XXX.XX
+    Total tax:                $X,XXX.XX
+
+    Federal withheld:         $X,XXX.XX
+    YOUR REFUND:              $X,XXX.XX
+    ```
+  </Step>
+</Steps>
+
+<Tip>
+  Every number in your return traces back to either a W-2 box or an IRS constant. EZFile shows its math at every step.
+</Tip>
+
+## Sample Return Output
+
+The sample W-2 (for fictional employee Elizabeth A Darling at University of Pittsburgh) produces a **$4,404.60 federal refund**.
+
+You can view the complete sample return in the repository:
+
+- **[summary-2025.md](https://github.com/stat-guy/ezFile/blob/main/returns/summary-2025.md)** — Human-readable return summary with every line item, tax brackets, and state/local breakdown
+- **[return-2025.json](https://github.com/stat-guy/ezFile/blob/main/returns/return-2025.json)** — Machine-readable return data (all W-2 fields, Form 1040 lines, bracket detail, state, and local)
+
+## Additional Commands to Try
+
+Now that you've processed a W-2, try these commands:
+
+<CodeGroup>
+```bash Review your return
+/ezfile:review
+```
+
+```bash Add student loan interest
+/ezfile:add-1098e 1200
+```
+
+```bash Recalculate after changes
+/ezfile:calculate
+```
+
+```bash Get a filing checklist
+/ezfile:checklist
+```
+
+```bash Explain a tax concept
+/ezfile:explain standard deduction
+```
+</CodeGroup>
+
+## Understanding Your Return
+
+<AccordionGroup>
+  <Accordion title="What is AGI?">
+    Adjusted Gross Income (AGI) is your total income minus certain deductions like student loan interest. It's used to calculate eligibility for many tax benefits.
+    
+    Try: `/ezfile:explain AGI`
+  </Accordion>
+  
+  <Accordion title="How are tax brackets applied?">
+    Tax brackets are marginal — you pay 10% on the first $11,925, then 12% on the amount above that up to $48,475, and so on. EZFile shows the exact calculation for each bracket.
+    
+    Try: `/ezfile:explain tax brackets`
+  </Accordion>
+  
+  <Accordion title="What is the standard deduction?">
+    For 2025, single filers under 65 get a $15,750 standard deduction. This amount is subtracted from your AGI before calculating tax. If you're 65 or older, you get $17,750.
+    
+    Try: `/ezfile:explain standard deduction`
+  </Accordion>
+  
+  <Accordion title="What is Schedule 1-A?">
+    New for 2025, Schedule 1-A provides above-the-line deductions for tips, overtime pay, car loan interest, and seniors. These reduce your AGI directly.
+    
+    Try: `/ezfile:explain schedule 1-a`
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card
+    title="Process Your Real W-2"
+    icon="file-invoice"
+    href="/commands/file-taxes"
+  >
+    Ready to calculate your actual return? Learn the full workflow for processing your real W-2.
+  </Card>
+  <Card
+    title="Filing Guide"
+    icon="list-check"
+    href="/guides/filing-instructions"
+  >
+    Once your return is calculated, follow the step-by-step guide to file at freefilefillableforms.com.
+  </Card>
+</CardGroup>
+
+<Warning>
+  **Remember**: EZFile calculates your return but does not file it. You must enter the numbers at freefilefillableforms.com or another IRS-approved filing method. Review all numbers carefully — you are responsible for the accuracy of your return.
+</Warning>

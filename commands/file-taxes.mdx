@@ -1,0 +1,201 @@
+---
+title: 'file-taxes'
+description: 'Upload a W-2 and calculate your complete 2025 federal tax return'
+---
+
+## Overview
+
+The `file-taxes` command is the main entry point for EZFile. It reads your W-2 document (PDF or image), extracts all data, asks intake questions, calculates your complete Form 1040 (or 1040-SR for seniors) line by line, and provides state tax guidance.
+
+## Syntax
+
+```bash
+/ezfile:file-taxes <path-to-w2-pdf-or-image>
+```
+
+<ParamField path="path-to-w2-pdf-or-image" type="string" required>
+  Path to your W-2 document. Can be a PDF file or image (JPG, PNG).
+</ParamField>
+
+## What It Does
+
+The command follows a complete 9-step workflow:
+
+1. **Reads your W-2** - Extracts all boxes (1-20) using multimodal document processing
+2. **Validates data** - Checks Box 4 ≈ Box 3 × 6.2% and Box 6 ≈ Box 5 × 1.45%
+3. **Shows extracted data** - Displays a summary with SSN masked to last 4 digits
+4. **Asks intake questions** - Date of birth, student loan interest, tips, overtime, auto loan interest
+5. **Checks scope** - Verifies you fit EZFile's single W-2 filer profile
+6. **Calculates return** - Computes the full 10-step tax calculation
+7. **Shows summary** - Displays complete return with all line items
+8. **Provides state guidance** - Gives state-specific tax notes based on W-2 Box 15
+9. **Saves data** - Writes return data to `./returns/return-2025.json` and `./returns/summary-2025.md`
+
+## Example Usage
+
+```bash
+/ezfile:file-taxes ~/Documents/w2-2025.pdf
+```
+
+## Output Format
+
+### Disclaimer (Shown First)
+
+<Warning>
+EZFile is a tax calculation assistant, not a licensed tax preparer or tax advisor. It does not file your taxes -- you must file yourself at freefilefillableforms.com or another IRS-approved method. Review all numbers carefully before entering them. You are responsible for the accuracy of your tax return. For complex situations, consult a CPA or enrolled agent.
+</Warning>
+
+### W-2 Extraction Summary
+
+```
+W-2 EXTRACTED
+Employee: John Smith (XXX-XX-1234)
+Employer: Acme Corporation
+
+Box 1   Wages:              $44,629.35
+Box 2   Federal withheld:    $4,200.00
+Box 3   SS wages:           $44,629.35
+Box 4   SS tax:              $2,767.02
+Box 5   Medicare wages:     $44,629.35
+Box 6   Medicare tax:          $647.13
+Box 12D 403(b):              $4,107.00
+Box 13  Retirement plan: ✓
+Box 15  State: PA
+Box 16  State wages:        $44,629.35
+Box 17  State tax withheld:  $1,370.12
+
+Validation:
+  Box 4 = Box 3 × 6.2% → $2,767.02 [PASS]
+  Box 6 = Box 5 × 1.45% → $647.13 [PASS]
+```
+
+### Complete Return Summary
+
+```
+2025 FEDERAL TAX RETURN SUMMARY
+Filing Status: Single
+Form: 1040
+
+INCOME
+  Wages (Box 1):                $44,629.35
+
+ADJUSTMENTS
+  Student loan interest:        -$1,800.00
+  AGI (Line 11):                $42,829.35
+
+DEDUCTIONS
+  Standard deduction:           -$15,750.00
+  Total deductions:             -$15,750.00
+  Taxable income (Line 15):     $27,079.35
+
+TAX
+  10% on first $11,925:          $1,192.50
+  12% on next $15,154.35:        $1,818.52
+  Tax (Line 16):                 $3,011.02
+  Saver's Credit:                 -$205.35
+  Total tax (Line 24):           $2,805.67
+
+PAYMENTS
+  Federal withheld (Box 2):      $4,200.00
+  Total payments (Line 33):      $4,200.00
+
+RESULT
+  YOUR REFUND:                   $1,394.33
+```
+
+### State Tax Note
+
+The command automatically reads your state from Box 15 and provides state-specific guidance. For example:
+
+<Tip>
+**Pennsylvania**: PA uses a flat 3.07% rate. Your PA tax: $1,370.12. Withheld: $1,370.12. PA refund/owed: $0.
+</Tip>
+
+## Intake Questions
+
+The command asks these questions using Claude's AskUserQuestion tool:
+
+1. **Date of birth** - Determines Form 1040 vs 1040-SR and standard deduction amount
+   - Born before January 2, 1961 → Form 1040-SR, $17,750 standard deduction
+   - Born January 2, 1961 or later → Form 1040, $15,750 standard deduction
+
+2. **Student loan interest** - For Schedule 1, Line 21 above-the-line deduction
+   - Max deduction: $2,500
+   - Phaseout: $85,000-$100,000 MAGI
+
+3. **Tips** - For Schedule 1-A, Line 1 deduction (new for 2025)
+   - Phaseout: $75,000-$100,000 MAGI
+
+4. **Overtime** - For Schedule 1-A, Line 2 deduction (new for 2025)
+   - Phaseout: $75,000-$100,000 MAGI
+
+5. **Auto loan interest** - For Schedule 1-A, Line 3 deduction (new for 2025)
+   - Max deduction: $10,000
+   - Phaseout: $75,000-$100,000 MAGI
+
+## The 10-Step Calculation
+
+The command implements the complete Form 1040 calculation pipeline:
+
+<Steps>
+  <Step title="Income">
+    Line 1a = W-2 Box 1 (wages)
+  </Step>
+  <Step title="Adjustments">
+    Line 10 = Student loan interest (Schedule 1, Line 26)
+  </Step>
+  <Step title="AGI">
+    Line 11 = Line 1a - Line 10
+  </Step>
+  <Step title="Schedule 1-A Deductions">
+    Line 12c = Tips + Overtime + Auto loan interest + Senior deduction
+  </Step>
+  <Step title="Standard Deduction">
+    Line 12a = $15,750 (or $17,750 if 65+)
+  </Step>
+  <Step title="Total Deductions">
+    Line 14 = Line 12a + Line 12c
+  </Step>
+  <Step title="Taxable Income">
+    Line 15 = max(Line 11 - Line 14, $0)
+  </Step>
+  <Step title="Tax">
+    Line 16 = Apply 2025 single filer brackets to Line 15
+  </Step>
+  <Step title="Credits">
+    Line 19 = Saver's Credit (nonrefundable)
+    Line 27 = Earned Income Credit (refundable)
+  </Step>
+  <Step title="Payments & Result">
+    Line 25a = W-2 Box 2 (federal withheld)
+    Line 33 = Line 25a + Line 27
+    Line 34 = Refund (if Line 33 > Line 24)
+    Line 37 = Amount owed (if Line 24 > Line 33)
+  </Step>
+</Steps>
+
+## Data Privacy
+
+<Note>
+**CRITICAL**: The command NEVER stores or displays full Social Security Numbers. All SSNs are immediately masked to XXX-XX-NNNN format (last 4 digits only). All processing is local -- no tax data is transmitted over the network.
+</Note>
+
+## Next Steps
+
+After running `file-taxes`, the command suggests:
+
+- Run `/ezfile:checklist` for step-by-step filing instructions
+- Run `/ezfile:explain <topic>` to understand any line item
+- Run `/ezfile:review` to see the summary again
+
+## Files Created
+
+- `./returns/return-2025.json` - Complete return data (all line values)
+- `./returns/summary-2025.md` - Human-readable summary
+
+## Related Commands
+
+- [add-1098e](/commands/add-1098e) - Add or update student loan interest
+- [calculate](/commands/calculate) - Recalculate return after changes
+- [review](/commands/review) - Display return summary
+- [checklist](/commands/checklist) - Get filing instructions

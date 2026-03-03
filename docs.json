@@ -1,122 +1,81 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "mint",
-  "name": "Mint Starter Kit",
+  "name": "EZFile",
+  "theme": "almond",
   "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
+    "primary": "#2E7D32",
+    "light": "#66BB6A",
+    "dark": "#1B5E20"
   },
-  "favicon": "/favicon.svg",
+  "navbar": {
+    "primary": {
+      "type": "github",
+      "href": "https://github.com/stat-guy/ezfile"
+    }
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/stat-guy/ezfile"
+    }
+  },
   "navigation": {
     "tabs": [
       {
-        "tab": "Guides",
+        "tab": "Documentation",
         "groups": [
           {
-            "group": "Getting started",
+            "group": "Get Started",
             "pages": [
-              "index",
-              "quickstart",
-              "development"
+              "introduction",
+              "installation",
+              "quickstart"
             ]
           },
           {
-            "group": "Customization",
+            "group": "Commands",
             "pages": [
-              "essentials/settings",
-              "essentials/navigation"
+              "commands/file-taxes",
+              "commands/add-1098e",
+              "commands/calculate",
+              "commands/review",
+              "commands/explain",
+              "commands/checklist"
             ]
           },
           {
-            "group": "Writing content",
+            "group": "Guides",
             "pages": [
-              "essentials/markdown",
-              "essentials/code",
-              "essentials/images",
-              "essentials/reusable-snippets"
-            ]
-          },
-          {
-            "group": "AI tools",
-            "pages": [
-              "ai-tools/cursor",
-              "ai-tools/claude-code",
-              "ai-tools/windsurf"
+              "guides/who-can-use",
+              "guides/understanding-your-return",
+              "guides/filing-instructions",
+              "guides/state-taxes",
+              "guides/privacy-security"
             ]
           }
         ]
       },
       {
-        "tab": "API reference",
+        "tab": "Tax Reference",
         "groups": [
           {
-            "group": "API documentation",
+            "group": "Tax Year 2025",
             "pages": [
-              "api-reference/introduction"
+              "reference/tax-brackets",
+              "reference/deductions",
+              "reference/credits",
+              "reference/schedule-1a"
             ]
           },
           {
-            "group": "Endpoint examples",
+            "group": "Forms & Fields",
             "pages": [
-              "api-reference/endpoint/get",
-              "api-reference/endpoint/create",
-              "api-reference/endpoint/delete",
-              "api-reference/endpoint/webhook"
+              "reference/form-1040",
+              "reference/w2-boxes",
+              "reference/free-file-guide"
             ]
           }
         ]
       }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Documentation",
-          "href": "https://mintlify.com/docs",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Blog",
-          "href": "https://mintlify.com/blog",
-          "icon": "newspaper"
-        }
-      ]
-    }
-  },
-  "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
-  },
-  "navbar": {
-    "links": [
-      {
-        "label": "Support",
-        "href": "mailto:hi@mintlify.com"
-      }
-    ],
-    "primary": {
-      "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
-    }
-  },
-  "contextual": {
-    "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
-  },
-  "footer": {
-    "socials": {
-      "x": "https://x.com/mintlify",
-      "github": "https://github.com/mintlify",
-      "linkedin": "https://linkedin.com/company/mintlify"
-    }
+    ]
   }
 }

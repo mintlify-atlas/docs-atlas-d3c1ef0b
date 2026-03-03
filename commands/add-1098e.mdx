@@ -1,0 +1,187 @@
+---
+title: 'add-1098e'
+description: 'Add student loan interest deduction from Form 1098-E'
+---
+
+## Overview
+
+The `add-1098e` command adds or updates the student loan interest deduction on your return. This is an "above-the-line" deduction (Schedule 1, Line 21) that reduces your Adjusted Gross Income (AGI), providing tax savings even if you take the standard deduction.
+
+## Syntax
+
+```bash
+/ezfile:add-1098e <amount|path-to-1098e>
+```
+
+<ParamField path="amount|path-to-1098e" type="string" required>
+  Either a dollar amount (e.g., `1800` or `$1,800.00`) or a path to your 1098-E form (PDF or image).
+</ParamField>
+
+## What It Does
+
+1. **Determines interest amount** - Parses dollar amount or extracts Box 1 from 1098-E document
+2. **Checks eligibility** - Verifies filing status, qualified loan, and MAGI requirements
+3. **Calculates deduction** - Applies $2,500 maximum and MAGI phaseout ($85K-$100K)
+4. **Shows impact** - Displays before/after comparison of AGI, taxable income, tax, and refund
+5. **Recalculates return** - Automatically recomputes the full return if one exists
+6. **Updates files** - Saves updated return to `./returns/return-2025.json`
+
+## Example Usage
+
+### With a dollar amount:
+
+```bash
+/ezfile:add-1098e 1800
+```
+
+### With a 1098-E document:
+
+```bash
+/ezfile:add-1098e ~/Documents/1098e-2025.pdf
+```
+
+## Eligibility Requirements
+
+<Note>
+All of these must be true to claim the deduction:
+
+- Filing status is Single (always true for EZFile users)
+- The interest was paid on a **qualified student loan**
+- You are not claimed as a dependent on someone else's return
+- Your Modified Adjusted Gross Income (MAGI) is below $100,000
+</Note>
+
+## Deduction Calculation
+
+The command applies IRS rules for 2025:
+
+```python
+# Maximum deduction is $2,500
+raw_deduction = min(interest_paid, 2500)
+
+# Phaseout based on MAGI
+if MAGI <= 85000:
+    deduction = raw_deduction  # Full deduction
+elif MAGI >= 100000:
+    deduction = 0  # No deduction (phased out completely)
+else:
+    # Partial deduction (linear phaseout)
+    reduction_ratio = (MAGI - 85000) / 15000
+    deduction = round(raw_deduction * (1 - reduction_ratio), 2)
+```
+
+### Example 1: Below Phaseout
+
+```
+Interest paid: $2,000
+MAGI: $70,000
+
+Result: $2,000 deduction (full amount, under $85K threshold)
+```
+
+### Example 2: In Phaseout Range
+
+```
+Interest paid: $3,500
+MAGI: $92,500
+
+Calculation:
+  Raw deduction: min($3,500, $2,500) = $2,500
+  Phaseout: ($92,500 - $85,000) / $15,000 = 50%
+  Final deduction: $2,500 × (1 - 0.50) = $1,250
+```
+
+### Example 3: Above Phaseout
+
+```
+Interest paid: $1,800
+MAGI: $105,000
+
+Result: $0 deduction (MAGI exceeds $100K limit)
+```
+
+## Output Format
+
+### If return already calculated:
+
+```
+Student Loan Interest Deduction
+
+  Interest paid:              $1,800.00
+  Maximum deduction:          $2,500.00
+  Your deduction:             $1,800.00
+
+  Impact on your return:
+    Previous AGI:             $44,629.35
+    New AGI:                  $42,829.35  (-$1,800.00)
+    Previous taxable income:  $28,879.35
+    New taxable income:       $27,079.35  (-$1,800.00)
+    Previous tax:              $3,227.02
+    New tax:                   $3,011.02  (-$216.00)
+    Previous refund:           $1,178.33
+    New refund:                $1,394.33  (+$216.00)
+```
+
+<Tip>
+**Why this matters:** The student loan interest deduction is an "above-the-line" deduction, meaning it reduces your Adjusted Gross Income (AGI) directly. This is valuable because:
+
+1. It reduces your taxable income even if you take the standard deduction
+2. A lower AGI can help you qualify for other credits (like the Saver's Credit)
+3. For every dollar of deduction, you save your marginal tax rate in taxes
+
+At your income level, your marginal tax rate is 12%, so this $1,800 deduction saves you approximately $216 in taxes.
+</Tip>
+
+### If no return calculated yet:
+
+```
+Student loan interest of $1,800.00 recorded.
+This will be applied when you run /ezfile:calculate or when
+your return is calculated via /ezfile:file-taxes.
+```
+
+## Where It Goes on the Return
+
+The deduction flows through these form lines:
+
+<Steps>
+  <Step title="Schedule 1, Part II, Line 21">
+    Student loan interest deduction: $1,800.00
+  </Step>
+  <Step title="Schedule 1, Line 26">
+    Total adjustments to income: $1,800.00
+  </Step>
+  <Step title="Form 1040, Line 10">
+    Adjustments to income (from Schedule 1): $1,800.00
+  </Step>
+  <Step title="Form 1040, Line 11">
+    AGI = Line 9 - Line 10
+  </Step>
+</Steps>
+
+## Common Questions
+
+<AccordionGroup>
+  <Accordion title="What if I paid more than $2,500 in interest?">
+    The maximum deduction is $2,500, regardless of how much you paid. If your 1098-E shows $3,000, you can only deduct $2,500.
+  </Accordion>
+
+  <Accordion title="What counts as a qualified student loan?">
+    A qualified student loan is a loan taken out solely to pay qualified education expenses (tuition, fees, room, board, books, supplies, equipment) for you, your spouse, or your dependent. The loan must have been for education provided during an academic period for an eligible student.
+  </Accordion>
+
+  <Accordion title="What if I'm in the phaseout range?">
+    If your MAGI is between $85,000 and $100,000, your deduction is reduced proportionally. The command automatically calculates the reduced amount and shows you the phaseout applied.
+  </Accordion>
+
+  <Accordion title="Can I claim this if my parents paid my student loan?">
+    No. The IRS considers loan payments made by someone else as a gift to you, and then treated as if you paid it. However, you can only deduct interest you are legally obligated to pay. If your parents made payments on a loan in your name, you can claim the deduction.
+  </Accordion>
+</AccordionGroup>
+
+## Related Commands
+
+- [file-taxes](/commands/file-taxes) - Main command to calculate your return
+- [calculate](/commands/calculate) - Recalculate return after adding deduction
+- [review](/commands/review) - View updated return summary
+- [explain](/commands/explain) - Understand AGI and above-the-line deductions

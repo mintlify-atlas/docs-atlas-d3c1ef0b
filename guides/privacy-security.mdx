@@ -1,0 +1,328 @@
+---
+title: Privacy & Security
+description: Privacy features, SSN masking, security hooks, and local-only processing
+---
+
+EZFile is designed with privacy as a core principle. All tax data processing happens locally on your machine, and multiple security layers prevent accidental data exposure.
+
+## Core Privacy Principles
+
+<CardGroup cols={2}>
+  <Card title="Local Processing" icon="computer">
+    All calculations happen on your machine. Tax data never leaves your computer.
+  </Card>
+  <Card title="SSN Masking" icon="eye-slash">
+    Full SSNs are never stored or displayed. Only the last 4 digits are shown.
+  </Card>
+  <Card title="Network Blocking" icon="ban">
+    Security hooks prevent network commands from running with tax data.
+  </Card>
+  <Card title="Output Validation" icon="shield-check">
+    Written files are scanned for accidentally exposed sensitive information.
+  </Card>
+</CardGroup>
+
+## SSN Handling
+
+EZFile takes special care with Social Security Numbers:
+
+### How SSNs Are Protected
+
+<Steps>
+  <Step title="Extraction">
+    When reading your W-2, EZFile extracts only the last 4 digits
+  </Step>
+  
+  <Step title="Masking">
+    SSN is always displayed as `XXX-XX-NNNN` where NNNN is the last 4 digits
+  </Step>
+  
+  <Step title="Storage">
+    Full SSNs are NEVER stored in any file created by EZFile
+  </Step>
+  
+  <Step title="Validation">
+    If a full SSN accidentally appears in output, the validation hook blocks it
+  </Step>
+</Steps>
+
+<Warning>
+**Important**: When you file at Free File Fillable Forms, you WILL need to enter your full SSN. EZFile masks it for privacy during calculation, but the IRS requires your real SSN to process your return.
+</Warning>
+
+### If You Need Your Full SSN
+
+Your full SSN is on your original W-2 (Box a). EZFile will refuse if you ask it to display your full SSN:
+
+```
+User: Show me my full SSN
+EZFile: I cannot display your full SSN. For privacy, EZFile only stores 
+        and displays the last 4 digits (XXX-XX-NNNN). Your full SSN is 
+        on your original W-2 document in Box a.
+```
+
+## Security Hooks
+
+EZFile uses three security hooks to prevent data leaks:
+
+### 1. Network Blocking Hook
+
+<Accordion title="block_network.py" icon="ban">
+  **Trigger**: Before any Bash command runs
+  
+  **Purpose**: Prevents network-related commands from executing
+  
+  **Blocked Commands**:
+  - `curl`, `wget`, `fetch`, `http`
+  - `ssh`, `scp`, `sftp`, `rsync`
+  - `nc`, `netcat`, `telnet`, `ftp`
+  - `aws`, `gcloud`, `az` (cloud CLIs)
+  - `git push`, `docker push`, `npm publish`
+  - `pip install` (with network)
+  - Python/Node scripts with network libraries
+  
+  **Example**:
+  ```bash
+  # This command is blocked:
+  curl -X POST https://example.com/upload -d @return-2025.json
+  
+  # Error message:
+  EZFile: Network commands are blocked. Tax data must never leave 
+  your local machine. Blocked pattern: \bcurl\b
+  ```
+  
+  **Why**: Tax data must NEVER be transmitted over the network
+</Accordion>
+
+### 2. PII Search Blocking Hook
+
+<Accordion title="block_pii_search.py" icon="magnifying-glass-minus">
+  **Trigger**: Before any web search or fetch
+  
+  **Purpose**: Prevents SSNs and other PII from appearing in web searches
+  
+  **Blocked Patterns**:
+  - SSN format: `###-##-####`
+  - SSN without dashes: 9 consecutive digits
+  - EIN format: `##-#######`
+  - Keywords: "SSN", "social security number"
+  - Bank account numbers (8-17 digits)
+  
+  **Example**:
+  ```
+  # This search is blocked:
+  WebSearch: "tax rules for SSN 123-45-6789"
+  
+  # Error message:
+  EZFile: Blocked web request containing Social Security Number. 
+  Tax-related personal information must never be sent over the network.
+  Detected: '123-45-6789'
+  ```
+  
+  **Why**: Even masked, sensitive patterns should never be transmitted
+</Accordion>
+
+### 3. Output Validation Hook
+
+<Accordion title="validate_output.py" icon="shield-check">
+  **Trigger**: After writing or editing any file
+  
+  **Purpose**: Scans written files for accidentally exposed SSNs and validates tax math
+  
+  **Checks**:
+  1. **Full SSN Detection**: Blocks `###-##-####` patterns (unless masked as `XXX-XX-####`)
+  2. **9-Digit Numbers**: Warns about unformatted potential SSNs
+  3. **Tax Math Invariants**:
+     - Taxable income = AGI - deductions
+     - Refund = payments - total_tax
+     - Tax ≥ 0 (never negative)
+     - Taxable income ≥ 0
+  
+  **Example**:
+  ```
+  # If a full SSN appears in a file:
+  EZFile Validation: FULL SSN DETECTED: '123-45-6789' -- 
+  Must be masked to XXX-XX-NNNN format
+  
+  CRITICAL: Full SSN found in output file. The file must be 
+  corrected to mask SSN as XXX-XX-NNNN.
+  
+  # The write operation is blocked
+  ```
+  
+  **Why**: Provides a last line of defense against accidental exposure
+</Accordion>
+
+## Local-Only Processing
+
+EZFile guarantees that all processing happens locally:
+
+### What Happens Locally
+
+<Steps>
+  <Step title="W-2 Reading">
+    PDF/image parsing happens on your machine using local libraries
+  </Step>
+  
+  <Step title="Tax Calculations">
+    All math (brackets, credits, deductions) computed locally
+  </Step>
+  
+  <Step title="File Writing">
+    Return summaries and JSON files written to `./returns/` on your machine
+  </Step>
+  
+  <Step title="No Cloud Services">
+    No API calls, no cloud uploads, no remote storage
+  </Step>
+</Steps>
+
+### What NEVER Happens
+
+<Warning>
+- Your W-2 is never uploaded anywhere
+- Your SSN never leaves your machine
+- Your return data never touches a server
+- EZFile does not "phone home" with your information
+</Warning>
+
+## File Storage
+
+EZFile stores return data in a gitignored directory:
+
+```
+./returns/
+├── summary-2025.md          # Human-readable summary
+└── return-2025.json          # Machine-readable data
+```
+
+### Security Best Practices
+
+<CardGroup cols={2}>
+  <Card title="After Filing" icon="trash">
+    Consider deleting return files after successfully filing
+  </Card>
+  <Card title="Backup" icon="hard-drive">
+    If keeping files, store on encrypted backup (not cloud)
+  </Card>
+  <Card title="Git" icon="git-alt">
+    The `returns/` directory is gitignored -- don't commit it
+  </Card>
+  <Card title="Sharing" icon="share-nodes">
+    If sharing return data with a CPA, do so securely (encrypted email, password-protected)
+  </Card>
+</CardGroup>
+
+## Common Security Questions
+
+<AccordionGroup>
+  <Accordion title="Can I email my return to my accountant?">
+    EZFile will block attempts to email or upload your return automatically. If you need to share your return:
+    
+    1. Manually attach `return-2025.json` or `summary-2025.md` to an email
+    2. Use encrypted email if possible
+    3. Or password-protect the file before sending
+    
+    EZFile cannot do this for you to prevent accidental transmission.
+  </Accordion>
+  
+  <Accordion title="What if I accidentally run a blocked command?">
+    The security hook will deny the command before it executes:
+    
+    ```
+    EZFile: Network commands are blocked. Tax data must never 
+    leave your local machine.
+    ```
+    
+    Your data is safe -- the command never ran.
+  </Accordion>
+  
+  <Accordion title="Can I use EZFile on a work computer?">
+    Yes, but remember:
+    - Your employer may have access to files on work machines
+    - Consider using your personal computer for sensitive tax data
+    - If using a work machine, delete return files after filing
+  </Accordion>
+  
+  <Accordion title="What about cloud backup services?">
+    If you use automatic cloud backup (Dropbox, Google Drive, iCloud):
+    - The `returns/` directory may sync automatically
+    - Consider excluding `returns/` from cloud sync
+    - Or move return files to a non-synced location
+  </Accordion>
+  
+  <Accordion title="Is the W-2 PDF/image stored?">
+    EZFile reads the W-2 you provide but does not make a copy. The original PDF/image remains where you stored it. You control whether to keep or delete it.
+  </Accordion>
+</AccordionGroup>
+
+## Hook Configuration
+
+The security hooks are configured in `hooks/hooks.json`:
+
+```json
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [{"type": "command", "command": "python3 hooks/block_network.py"}]
+      },
+      {
+        "matcher": "WebSearch|WebFetch",
+        "hooks": [{"type": "command", "command": "python3 hooks/block_pii_search.py"}]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [{"type": "command", "command": "python3 hooks/validate_output.py"}]
+      }
+    ]
+  }
+}
+```
+
+<Info>
+These hooks run automatically -- you don't need to configure or enable them.
+</Info>
+
+## Privacy Guarantees
+
+EZFile makes these guarantees:
+
+<Steps>
+  <Step title="No Network Transmission" icon="ban">
+    Tax data never leaves your local machine
+  </Step>
+  
+  <Step title="SSN Masking" icon="mask">
+    Full SSNs never stored or displayed
+  </Step>
+  
+  <Step title="No Logging" icon="file-slash">
+    No logs sent to external services
+  </Step>
+  
+  <Step title="Open Source" icon="code">
+    All code is open source -- you can verify these claims yourself
+  </Step>
+</Steps>
+
+## What You're Responsible For
+
+<Warning>
+While EZFile protects your data during calculation, you are responsible for:
+
+- Securing your original W-2 documents
+- Choosing whether to keep or delete return files
+- Protecting your computer with passwords, encryption, etc.
+- Entering your SSN correctly at Free File Fillable Forms
+- Handling filed returns securely after submission
+</Warning>
+
+## Disclaimer
+
+<Note>
+EZFile is a tax calculation assistant, not a licensed tax preparer or security service. While we take extensive measures to protect your privacy, you are responsible for securing your tax documents and data.
+</Note>

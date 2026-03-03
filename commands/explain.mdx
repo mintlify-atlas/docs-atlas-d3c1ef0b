@@ -1,0 +1,267 @@
+---
+title: 'explain'
+description: 'Explain tax concepts, W-2 boxes, and Form 1040 lines in plain English'
+---
+
+## Overview
+
+The `explain` command provides clear, jargon-free explanations of tax concepts using your actual numbers. Think of it as a patient, knowledgeable friend who understands taxes and can explain them in everyday language.
+
+## Syntax
+
+```bash
+/ezfile:explain <topic>
+```
+
+<ParamField path="topic" type="string" required>
+  The tax concept, W-2 box, or Form 1040 line you want explained. Examples:
+  - `AGI` or `adjusted gross income`
+  - `Box 12` or `Box 12 Code E`
+  - `Line 16` or `tax brackets`
+  - `standard deduction`
+  - `marginal rate` or `effective rate`
+  - `Saver's Credit`
+  - `withholding`
+</ParamField>
+
+## What It Does
+
+1. **Reads reference files** - Loads accurate tax definitions and rules
+2. **Reads your return** - Gets your specific numbers from `./returns/return-2025.json` (if available)
+3. **Structures explanation** - Provides 4-part explanation:
+   - **What It Is** - Plain-English definition
+   - **How It Works (With Your Numbers)** - Shows actual calculation using your data
+   - **Why It Matters** - Explains impact on your refund/tax
+   - **What You Can Do About It** - Actionable takeaway (if applicable)
+
+## Example Usage
+
+```bash
+/ezfile:explain AGI
+```
+
+```bash
+/ezfile:explain Box 12 Code E
+```
+
+```bash
+/ezfile:explain standard deduction
+```
+
+```bash
+/ezfile:explain marginal rate
+```
+
+## Example Explanations
+
+### Adjusted Gross Income (AGI)
+
+```bash
+/ezfile:explain AGI
+```
+
+<Note>
+**Adjusted Gross Income (AGI)** is your total income minus a few specific deductions the IRS lets you take "above the line." Think of it as your income after the government's approved adjustments.
+
+For you, it's straightforward:
+- Your wages (Box 1): $44,629.35
+- Minus student loan interest: -$1,800.00
+- **Your AGI: $42,829.35**
+
+AGI matters because it's the number the IRS uses to decide if you qualify for credits and deductions. A lower AGI can unlock benefits like the Saver's Credit or keep you under phaseout thresholds.
+</Note>
+
+### Standard Deduction
+
+```bash
+/ezfile:explain standard deduction
+```
+
+<Note>
+**The standard deduction** is a fixed amount the IRS lets you subtract from your AGI before calculating your tax. It's the government's way of saying "we won't tax the first $15,750 you earn" (for single filers in 2025).
+
+You have two choices: take the standard deduction ($15,750) or itemize deductions (mortgage interest, property taxes, big charitable gifts, etc.). Since you rent and don't have large deductible expenses, the standard deduction is almost certainly better for you.
+
+**Your math**: AGI ($42,829.35) minus standard deduction ($15,750) = taxable income ($27,079.35). You only pay tax on that $27,079.35, not your full wages.
+</Note>
+
+### Box 12 Code E
+
+```bash
+/ezfile:explain Box 12 Code E
+```
+
+<Note>
+**Box 12 Code E** shows your contributions to a 403(b) retirement plan. On your W-2, that's $4,107.00 going to your TIAA retirement account.
+
+Here's the good news: you already got the tax break. Your employer subtracted this $4,107 from your salary BEFORE calculating Box 1 (your taxable wages). That's why Box 1 ($44,629.35) is lower than your total pay.
+
+**Don't subtract this again** -- it's already reflected in your lower Box 1 number. The W-2 is just showing you the break you received.
+
+This contribution also makes you eligible for the Saver's Credit if your AGI is under $39,500.
+</Note>
+
+### Tax Brackets / Marginal Rate
+
+```bash
+/ezfile:explain marginal rate
+```
+
+<Note>
+**Your marginal tax rate** is the rate on your LAST dollar of income, not your average rate. The US uses "progressive" brackets -- different portions of your income are taxed at different rates.
+
+With taxable income of $27,079.35:
+- First $11,925 is taxed at **10%** = $1,192.50
+- Next $15,154.35 (from $11,926 to $27,079.35) is taxed at **12%** = $1,818.52
+- Total tax: $3,011.02
+
+Your **marginal rate** is 12% (the bracket your last dollar falls in), but your **effective rate** is only 6.7% ($3,011.02 ÷ $44,629.35). That's the rate that actually matters for your wallet.
+
+**Common misconception**: "If I earn more and move into the 22% bracket, all my income gets taxed at 22%." **This is wrong.** Only the dollars above $48,475 would be taxed at 22%. Your first $11,925 is still at 10%, and the next chunk is still at 12%.
+</Note>
+
+## Topics You Can Explain
+
+The command handles explanations for:
+
+<CardGroup cols={2}>
+  <Card title="W-2 Boxes" icon="file-invoice">
+    - Box 1 (Wages)
+    - Box 2 (Federal withheld)
+    - Box 3-6 (SS/Medicare)
+    - Box 12 codes (D, E, G, AA, BB, etc.)
+    - Box 13 checkboxes
+    - Box 15-20 (State/local)
+  </Card>
+  
+  <Card title="Form 1040 Lines" icon="file-alt">
+    - Line 1a, 9, 10, 11
+    - Line 12a, 12c, 14, 15
+    - Line 16, 19, 22, 24
+    - Line 25a, 27, 33
+    - Line 34 (refund)
+    - Line 37 (amount owed)
+  </Card>
+  
+  <Card title="Key Concepts" icon="book">
+    - AGI / MAGI
+    - Standard deduction
+    - Taxable income
+    - Tax brackets
+    - Marginal rate
+    - Effective rate
+    - Above-the-line deduction
+    - Withholding
+  </Card>
+  
+  <Card title="Credits & Deductions" icon="hand-holding-usd">
+    - Saver's Credit
+    - Earned Income Credit
+    - Student loan interest
+    - Schedule 1-A deductions
+    - Tip deduction
+    - Overtime deduction
+    - Senior deduction
+  </Card>
+</CardGroup>
+
+## Explanation Style
+
+All explanations follow these principles:
+
+<Tip>
+**Writing Style**:
+- Written like explaining to a smart friend over coffee
+- No condescension -- the user is smart, they just haven't learned this yet
+- Uses analogies to everyday concepts when helpful
+- Maximum 4 paragraphs unless the topic requires more
+- Always connects abstract concepts to concrete dollar amounts
+- Uses YOUR specific numbers when return data is available
+</Tip>
+
+## When Return Data Isn't Available
+
+If you haven't calculated a return yet, the command still explains the concept but uses generic examples:
+
+```bash
+# Before running file-taxes:
+/ezfile:explain AGI
+```
+
+<Note>
+**Adjusted Gross Income (AGI)** is your total income minus a few specific deductions the IRS lets you take "above the line."
+
+For a single W-2 filer, the calculation looks like:
+- Wages from W-2 Box 1: (your total income)
+- Minus student loan interest: (up to $2,500)
+- = Your AGI
+
+AGI matters because it determines eligibility for credits and deductions. Lower AGI = more tax benefits.
+
+Run `/ezfile:file-taxes <path-to-w2>` to calculate your specific AGI.
+</Note>
+
+## Out-of-Scope Topics
+
+If you ask about something outside EZFile's scope (itemized deductions, Schedule C, AMT, etc.), the command:
+
+1. Briefly explains what it is
+2. Notes that EZFile doesn't handle it
+3. Suggests a resource (IRS.gov, tax professional)
+
+<Warning>
+**Example - Itemized Deductions**:
+
+"Itemized deductions let you deduct specific expenses (mortgage interest, property taxes, medical expenses, charitable donations) instead of taking the standard deduction. For single filers in 2025, itemizing only makes sense if your total deductions exceed $15,750.
+
+EZFile doesn't calculate itemized deductions -- it assumes you're taking the standard deduction. If you think you might benefit from itemizing, consult a CPA or use TurboTax/FreeTaxUSA."
+</Warning>
+
+## Common Questions Explained
+
+<AccordionGroup>
+  <Accordion title="What's the difference between AGI and MAGI?">
+    **AGI (Adjusted Gross Income)** is Line 11 on your Form 1040 -- your total income minus above-the-line deductions like student loan interest.
+    
+    **MAGI (Modified Adjusted Gross Income)** adds back certain deductions to AGI for the purpose of determining eligibility for specific credits and deductions. For EZFile users (single W-2 filers), MAGI is usually the same as AGI.
+  </Accordion>
+
+  <Accordion title="What's the difference between marginal and effective tax rate?">
+    **Marginal rate** is the tax rate on your LAST dollar of income. If you're in the 12% bracket, each additional dollar is taxed at 12%.
+    
+    **Effective rate** is your total tax divided by your total income -- your "real" tax rate. Because of progressive brackets and deductions, your effective rate is always lower than your marginal rate.
+    
+    Example: If you earn $44,629 and pay $2,806 in tax, your effective rate is 6.3%, even though your marginal rate is 12%.
+  </Accordion>
+
+  <Accordion title="What's an 'above-the-line' deduction?">
+    "Above the line" refers to deductions that reduce your AGI (Line 11). They're called this because they appear on Form 1040 BEFORE the AGI line.
+    
+    These are valuable because:
+    1. They reduce AGI even if you take the standard deduction
+    2. Lower AGI can qualify you for more credits
+    3. They're available to everyone (you don't need to itemize)
+    
+    For EZFile users, the main above-the-line deduction is student loan interest (Schedule 1, Line 21).
+  </Accordion>
+
+  <Accordion title="Why is my refund different from my tax?">
+    Your **tax** (Line 24) is what you owe the government based on your income.
+    
+    Your **refund** (Line 34) is the difference between what you already paid (withholding from paychecks) and what you actually owe.
+    
+    Example:
+    - Tax owed: $2,806
+    - Federal withheld: $4,200
+    - Refund: $1,394
+    
+    You're not "getting money from the government" -- you're getting back YOUR money that was over-withheld throughout the year.
+  </Accordion>
+</AccordionGroup>
+
+## Related Commands
+
+- [review](/commands/review) - See all line items in your return
+- [calculate](/commands/calculate) - Understand how each line is computed
+- [file-taxes](/commands/file-taxes) - Calculate your return with actual numbers
+- [checklist](/commands/checklist) - Learn where to enter each line when filing

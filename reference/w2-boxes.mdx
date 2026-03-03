@@ -1,0 +1,534 @@
+---
+title: W-2 Box-by-Box Guide
+description: Complete explanation of every W-2 box and how it's used in tax calculations
+---
+
+This reference explains every box on Form W-2, what it means, and how EZFile uses it for tax calculations.
+
+## Identity Fields
+
+<AccordionGroup>
+  <Accordion title="Box a: Employee's Social Security Number">
+    **What it is:** Your Social Security Number
+    
+    **EZFile handling:** NEVER stored in full. Only last 4 digits extracted (XXX-XX-NNNN)
+    
+    **Form 1040 use:** Entered at top of form (full SSN required)
+    
+    **Privacy note:** This is the most sensitive piece of information on your W-2. EZFile processes it locally and never transmits it.
+  </Accordion>
+  
+  <Accordion title="Box b: Employer Identification Number (EIN)">
+    **What it is:** Your employer's federal tax ID number
+    
+    **Format:** XX-XXXXXXX
+    
+    **EZFile handling:** Stored for reference; not sensitive like SSN
+    
+    **Form 1040 use:** Not entered directly on Form 1040
+  </Accordion>
+  
+  <Accordion title="Box c: Employer's Name, Address, and ZIP">
+    **What it is:** Your employer's official business information
+    
+    **EZFile handling:** Displayed for verification
+    
+    **Form 1040 use:** Not entered directly
+    
+    **Note:** This should match your employer's legal name, not necessarily your department or division.
+  </Accordion>
+  
+  <Accordion title="Box d: Control Number">
+    **What it is:** Employer's internal tracking number for this W-2
+    
+    **EZFile handling:** Ignored (not needed for tax filing)
+    
+    **Note:** Used by employers and payroll companies for recordkeeping
+  </Accordion>
+  
+  <Accordion title="Box e: Employee's Name">
+    **What it is:** Your legal name as it appears on your Social Security card
+    
+    **EZFile handling:** Used for display and verification
+    
+    **Form 1040 use:** Must match exactly on your tax return
+    
+    **Important:** If your name has changed (marriage, divorce, etc.), update it with Social Security Administration before filing.
+  </Accordion>
+  
+  <Accordion title="Box f: Employee's Address">
+    **What it is:** Your address as your employer has on file
+    
+    **EZFile handling:** Displayed for verification
+    
+    **Form 1040 use:** You enter your CURRENT address (may differ from Box f)
+    
+    **Note:** If you moved during the year, use your current address on Form 1040.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Core Income & Withholding
+
+### Box 1: Wages, Tips, Other Compensation
+
+<Card title="Box 1: Your Taxable Federal Wages" icon="dollar-sign" color="#16a34a">
+  **What it is:** Your total taxable federal wages for the year
+  
+  **This goes on Form 1040, Line 1a**
+  
+  **Calculation:**
+  ```
+  Box 1 = Gross Salary
+          - Pre-tax retirement (401k, 403b, 457)
+          - Pre-tax HSA contributions
+          - Pre-tax health insurance premiums
+          - Pre-tax FSA contributions
+          - Pre-tax transit benefits
+  ```
+  
+  **Example:**
+  ```
+  Gross salary:              $51,333
+  - 401(k) contributions:    -$4,107
+  - HSA contributions:       -$1,500
+  - Health insurance:        -$1,200
+  = Box 1:                   $44,526
+  ```
+  
+  **Why it's lower than your salary:** Pre-tax benefits reduce this number. This is a GOOD thing—you're not taxed on money that went to retirement or health benefits.
+</Card>
+
+<Warning>
+  **Critical:** Box 1 is THE number that drives your entire tax return. This is your taxable income for federal purposes.
+</Warning>
+
+---
+
+### Box 2: Federal Income Tax Withheld
+
+<Card title="Box 2: Your Tax Payments" icon="receipt" color="#2563eb">
+  **What it is:** Federal income tax your employer already sent to the IRS on your behalf
+  
+  **This goes on Form 1040, Line 25a**
+  
+  **How it's determined:** Based on your W-4 form elections:
+  - Filing status selection
+  - Multiple jobs adjustment
+  - Extra withholding amount
+  - Allowances (for older W-4s)
+  
+  **EZFile critical use:** This is compared to your actual tax liability (Line 24) to determine if you get a refund or owe money.
+  
+  **Formula:**
+  ```
+  If Box 2 > Total Tax (Line 24): You get a REFUND
+  If Box 2 < Total Tax (Line 24): You OWE money
+  ```
+</Card>
+
+---
+
+### Box 3: Social Security Wages
+
+| Attribute | Value |
+|-----------|-------|
+| **What it is** | Wages subject to Social Security tax |
+| **Rate** | 6.2% (employee share) |
+| **2025 Wage Base** | $176,100 (capped) |
+| **Form 1040 use** | Not entered (verification only) |
+
+**How it differs from Box 1:**
+- Does NOT exclude most pre-tax deductions
+- Retirement contributions (401k, 403b) are still included in Box 3
+- HSA contributions ARE excluded from Box 3
+- Capped at $176,100 for 2025
+
+**Validation formula:**
+```
+Box 4 should equal Box 3 × 6.2% (within $1 rounding)
+```
+
+---
+
+### Box 4: Social Security Tax Withheld
+
+<Card title="Box 4 Validation" icon="check" color="#16a34a">
+  **What it is:** Employee's share of Social Security tax (6.2% of Box 3)
+  
+  **Expected value:**
+  ```
+  Box 4 = Box 3 × 0.062
+  ```
+  
+  **2025 Maximum:** $10,918.20 ($176,100 × 6.2%)
+  
+  **Validation check:**
+  ```
+  actual_rate = Box 4 / Box 3
+  
+  If |actual_rate - 0.062| > 0.001:
+      Flag for review
+  ```
+  
+  **Example:**
+  ```
+  Box 3: $50,000
+  Expected Box 4: $50,000 × 0.062 = $3,100
+  Actual Box 4: $3,100 ✓
+  ```
+</Card>
+
+---
+
+### Box 5: Medicare Wages and Tips
+
+| Attribute | Value |
+|-----------|-------|
+| **What it is** | Wages subject to Medicare tax |
+| **Rate** | 1.45% (employee share) |
+| **Wage Base** | No limit (all wages taxed) |
+| **Additional Medicare** | 0.9% on wages over $200,000 |
+| **Form 1040 use** | Not entered (verification only) |
+
+**How it differs from Box 3:**
+- No wage cap (all wages subject to Medicare)
+- Usually equals Box 3 unless wages exceed Social Security cap ($176,100)
+
+**Validation formula:**
+```
+Box 6 should equal Box 5 × 1.45% (within $1 rounding)
+```
+
+---
+
+### Box 6: Medicare Tax Withheld
+
+<Card title="Box 6 Validation" icon="check" color="#16a34a">
+  **What it is:** Employee's share of Medicare tax (1.45% of Box 5)
+  
+  **Expected value:**
+  ```
+  Box 6 = Box 5 × 0.0145
+  ```
+  
+  **Additional Medicare Tax:**
+  If Box 5 > $200,000:
+  ```
+  Box 6 = Box 5 × 0.0145 + (Box 5 - $200,000) × 0.009
+  ```
+  
+  **Validation check:**
+  ```
+  If Box 5 <= $200,000:
+      expected_rate = 0.0145
+  Else:
+      expected_rate = (Box 6 / Box 5)
+  
+  If |actual_rate - expected_rate| > 0.001:
+      Flag for review
+  ```
+  
+  **Example:**
+  ```
+  Box 5: $50,000
+  Expected Box 6: $50,000 × 0.0145 = $725
+  Actual Box 6: $725 ✓
+  ```
+</Card>
+
+---
+
+## Special Situations (Boxes 7-11)
+
+<AccordionGroup>
+  <Accordion title="Box 7: Social Security Tips">
+    **What it is:** Tips you reported to your employer that are subject to Social Security tax
+    
+    **EZFile relevance:** Used for Schedule 1-A tip deduction calculation
+    
+    **Note:** Tips are already included in Box 1 (wages). Do NOT add Box 7 to Box 1.
+    
+    **Common for:** Restaurant servers, bartenders, delivery drivers, hairstylists
+    
+    **Schedule 1-A deduction:** Tips may qualify for a deduction (new for 2025)
+  </Accordion>
+  
+  <Accordion title="Box 8: Allocated Tips">
+    **What it is:** Tips allocated by employer for large food/beverage establishments
+    
+    **Important:** Allocated tips are NOT included in Box 1—you may need to add them as income
+    
+    **EZFile handling:** Rare for the target user; flag if present
+    
+    **Note:** Only applies to large restaurants (8+ employees during a typical business day)
+  </Accordion>
+  
+  <Accordion title="Box 9: (Blank / Verification Code)">
+    **What it is:** Historically used for advance EIC payments; now often blank or used for verification
+    
+    **EZFile handling:** Ignored
+  </Accordion>
+  
+  <Accordion title="Box 10: Dependent Care Benefits">
+    **What it is:** Employer-provided dependent care assistance (Dependent Care FSA)
+    
+    **EZFile relevance:** N/A (no dependents in scope)
+    
+    **Note:** If present for single filers with no dependents, it's informational only
+  </Accordion>
+  
+  <Accordion title="Box 11: Nonqualified Plans">
+    **What it is:** Distributions from nonqualified deferred compensation plans
+    
+    **EZFile handling:** Already included in Box 1; informational only
+    
+    **Note:** Rare for typical W-2 employees
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Box 12: Coded Entries (Critical)
+
+**Format:** Each entry has a letter code and dollar amount (up to 4 entries: 12a, 12b, 12c, 12d)
+
+### Common Box 12 Codes
+
+| Code | Description | Already Excluded from Box 1? | EZFile Impact |
+|------|-------------|------------------------------|---------------|
+| **D** | 401(k) elective deferrals | YES | Used for Saver's Credit eligibility |
+| **E** | 403(b) contributions | YES | Used for Saver's Credit eligibility |
+| **G** | 457(b) contributions | YES | Used for Saver's Credit eligibility |
+| **W** | HSA employer contributions | YES | Informational only |
+| **AA** | Roth 401(k) contributions | **NO** (after-tax) | Used for Saver's Credit eligibility |
+| **BB** | Roth 403(b) contributions | **NO** (after-tax) | Used for Saver's Credit eligibility |
+| **DD** | Health insurance cost | N/A | Informational only (NOT deductible) |
+| **C** | Group-term life insurance >$50K | NO (taxable) | Already included in Box 1 |
+
+<Warning>
+  **CRITICAL:** Codes D, E, G, and W are ALREADY excluded from Box 1. Do NOT subtract them again. They appear in Box 12 for information and Saver's Credit calculations only.
+</Warning>
+
+### Saver's Credit Relevance
+
+Codes **D, E, G, AA, BB** represent retirement contributions eligible for the Saver's Credit (Form 8880).
+
+**Eligibility:**
+- AGI ≤ $39,500 (single filer)
+- Made retirement contributions during the year
+- Ages 18+, not a full-time student, not claimed as dependent
+
+**Credit calculation:**
+```
+Eligible contributions = sum of Box 12 codes D, E, G, AA, BB
+Max eligible: $2,000
+
+Credit rate based on AGI:
+- 50% if AGI ≤ $23,750
+- 20% if AGI $23,751 - $25,850
+- 10% if AGI $25,851 - $39,500
+
+Credit = min(contributions, $2,000) × credit_rate
+```
+
+---
+
+## Box 13: Checkboxes
+
+<Tabs>
+  <Tab title="Statutory Employee">
+    **What it means:** You're an employee treated as self-employed for certain purposes
+    
+    **EZFile handling:** Out of scope—refer to tax professional
+    
+    **Common for:** Agent-drivers, commission-drivers, traveling salespeople, certain home workers
+    
+    **Note:** If checked, you file Schedule C, not just Form 1040
+  </Tab>
+  
+  <Tab title="Retirement Plan">
+    **What it means:** You were eligible to participate in an employer retirement plan (401k, 403b, pension, etc.)
+    
+    **EZFile impact:** Affects traditional IRA deduction limits (not relevant for W-2-only scope)
+    
+    **Note:** This box is checked even if you didn't contribute—it just means the plan was available
+  </Tab>
+  
+  <Tab title="Third-Party Sick Pay">
+    **What it means:** Sick pay was paid by a third party (insurance company) rather than your employer
+    
+    **EZFile handling:** Informational only; already included in Box 1
+    
+    **Note:** Rare for most employees
+  </Tab>
+</Tabs>
+
+---
+
+## Box 14: Other
+
+**What it is:** Employer-specific codes for additional information
+
+**Common Box 14 entries:**
+
+| Entry | Description | Tax Impact |
+|-------|-------------|------------|
+| SDI / CASDI | State disability insurance | State-specific; not federally deductible |
+| Union dues | Labor union membership dues | May be deductible (itemized) |
+| Uniform | Uniform allowance or cost | Informational |
+| Ed Asst | Educational assistance | Excluded from income (up to $5,250) |
+| LST | Local Service Tax (PA) | Already withheld; informational |
+| VPDI | Voluntary plan disability insurance | State-specific |
+
+<Note>
+  **EZFile handling:** Box 14 is usually informational. Some states use Box 14 data for state returns. EZFile displays to user but does not use in federal calculations unless specifically recognized.
+</Note>
+
+---
+
+## State & Local Fields (Boxes 15-20)
+
+### Box 15: State / Employer's State ID
+
+| Field | Description |
+|-------|-------------|
+| **State** | Two-letter state code (e.g., PA, NY, CA) |
+| **Employer's state ID** | Employer's state tax identification number |
+| **EZFile use** | Determines which state return is needed |
+
+---
+
+### Box 16: State Wages, Tips, Etc.
+
+<Card title="State Wages (Box 16)" icon="landmark" color="#7c3aed">
+  **What it is:** Wages subject to state income tax
+  
+  **May differ from Box 1 because:**
+  - States have different pre-tax deduction rules
+  - Some states tax certain benefits that are federally excluded
+  - Some states exclude certain income that's federally taxable
+  
+  **EZFile use:** Base for state tax calculation
+  
+  **Example (Pennsylvania):**
+  ```
+  Federal wages (Box 1):    $44,526  (excludes 401k)
+  State wages (Box 16):     $48,633  (includes 401k)
+  Difference:               $4,107   (PA taxes retirement contributions)
+  ```
+</Card>
+
+---
+
+### Box 17: State Income Tax
+
+**What it is:** State income tax withheld by employer
+
+**EZFile use:** Compared to state tax liability to determine state refund or amount owed
+
+**Formula:**
+```
+If Box 17 > State Tax Calculated: State REFUND
+If Box 17 < State Tax Calculated: State OWED
+```
+
+---
+
+### Boxes 18-20: Local Taxes
+
+| Box | Field | Description |
+|-----|-------|-------------|
+| **18** | Local wages | Wages subject to local income tax |
+| **19** | Local income tax | Local tax withheld |
+| **20** | Locality name | Name or code of local jurisdiction |
+
+**Common in these states:**
+- Pennsylvania (local EIT tax)
+- Ohio (city/school district taxes)
+- New York (NYC, Yonkers)
+- Indiana (county taxes)
+- Maryland (county taxes)
+
+**EZFile use:** Calculates local tax refund/owed (if applicable)
+
+---
+
+## Validation Rules
+
+After extracting W-2 data, verify these relationships:
+
+<CodeGroup>
+```python Python Validation
+# Social Security tax check
+assert abs(box_4 - (box_3 * 0.062)) <= 1.00, "Box 4 validation failed"
+
+# Medicare tax check
+if box_5 <= 200000:
+    expected_medicare = box_5 * 0.0145
+else:
+    expected_medicare = box_5 * 0.0145 + (box_5 - 200000) * 0.009
+
+assert abs(box_6 - expected_medicare) <= 1.00, "Box 6 validation failed"
+
+# Wage base check
+assert box_3 <= 176100, "Box 3 exceeds 2025 SS wage base"
+
+# Relationship check
+assert box_5 >= box_3, "Box 5 (Medicare) should be >= Box 3 (SS)"
+```
+
+```javascript JavaScript Validation
+// Social Security tax check (within $1 tolerance)
+const expectedSS = box3 * 0.062;
+if (Math.abs(box4 - expectedSS) > 1.00) {
+  throw new Error('Box 4 validation failed');
+}
+
+// Medicare tax check
+let expectedMedicare = box5 * 0.0145;
+if (box5 > 200000) {
+  expectedMedicare += (box5 - 200000) * 0.009;
+}
+
+if (Math.abs(box6 - expectedMedicare) > 1.00) {
+  throw new Error('Box 6 validation failed');
+}
+
+// Wage base check
+if (box3 > 176100) {
+  console.warn('Box 3 exceeds 2025 SS wage base');
+}
+
+// Relationship check
+if (box5 < box3) {
+  throw new Error('Box 5 should be >= Box 3');
+}
+```
+</CodeGroup>
+
+<Warning>
+  If any validation check fails by more than $1, flag the W-2 for user review. There may be data extraction errors or unusual payroll situations.
+</Warning>
+
+---
+
+## Quick Reference: Box-to-Form Mapping
+
+| W-2 Box | Form 1040 Line | Description |
+|---------|----------------|-------------|
+| Box 1 | Line 1a | Wages, salaries, tips |
+| Box 2 | Line 25a | Federal income tax withheld |
+| Box 3 | (Validation only) | Social Security wages |
+| Box 4 | (Validation only) | Social Security tax withheld |
+| Box 5 | (Validation only) | Medicare wages |
+| Box 6 | (Validation only) | Medicare tax withheld |
+| Box 7 | Schedule 1-A, Line 1 | Social Security tips (tip deduction) |
+| Box 12 (D,E,G,AA,BB) | Form 8880 | Retirement contributions (Saver's Credit) |
+| Box 16 | State return | State wages |
+| Box 17 | State return | State tax withheld |
+
+<Tip>
+  Only **Box 1** and **Box 2** directly transfer to Form 1040. Other boxes are used for validation, credits, or state returns.
+</Tip>

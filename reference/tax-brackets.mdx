@@ -1,0 +1,55 @@
+---
+title: "2025 Federal Tax Brackets"
+description: "Tax brackets and computation formulas for single filers in 2025"
+---
+
+# 2025 Federal Tax Brackets (Single Filers)
+
+This page contains the federal income tax brackets for single filers with no dependents for the 2025 tax year.
+
+## Tax Bracket Table
+
+The following table shows the tax rates, income ranges, and cumulative tax at the top of each bracket:
+
+| Taxable Income | Rate | Cumulative Tax at Top |
+|---|---|---|
+| $0 - $11,925 | 10% | $1,192.50 |
+| $11,926 - $48,475 | 12% | $5,578.50 |
+| $48,476 - $103,350 | 22% | $12,651.00 |
+| $103,351 - $197,300 | 24% | $23,199.00 |
+| $197,301 - $250,525 | 32% | $40,231.00 |
+| $250,526 - $626,350 | 35% | $171,520.75 |
+| Over $626,350 | 37% | -- |
+
+## Bracket Computation Formula
+
+Use the following formula to calculate federal income tax based on taxable income:
+
+```python
+if taxable_income <= 11,925:
+    tax = taxable_income * 0.10
+elif taxable_income <= 48,475:
+    tax = 1,192.50 + (taxable_income - 11,925) * 0.12
+elif taxable_income <= 103,350:
+    tax = 5,578.50 + (taxable_income - 48,475) * 0.22
+elif taxable_income <= 197,300:
+    tax = 17,651.00 + (taxable_income - 103,350) * 0.24
+elif taxable_income <= 250,525:
+    tax = 40,099.00 + (taxable_income - 197,300) * 0.32
+elif taxable_income <= 626,350:
+    tax = 57,131.00 + (taxable_income - 250,525) * 0.35
+else:
+    tax = 188,769.75 + (taxable_income - 626,350) * 0.37
+```
+
+<Note>
+For EZFile's target demographic (W-2 single filers), the first 3-4 brackets are the most commonly applicable.
+</Note>
+
+## Filing Status
+
+This calculator is designed for **Single** filing status only. It does not support:
+- Married Filing Jointly (MFJ)
+- Married Filing Separately (MFS)
+- Head of Household (HoH)
+- Qualifying Surviving Spouse (QSS)

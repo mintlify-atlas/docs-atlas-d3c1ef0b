@@ -1,0 +1,173 @@
+---
+title: Understanding Your Return
+description: How to read the return summary and line-by-line explanations
+---
+
+After EZFile processes your W-2 and completes your tax calculations, you'll receive a detailed return summary. This guide explains each section and what the numbers mean.
+
+## Return Summary Format
+
+EZFile generates two files in the `returns/` directory:
+
+<CardGroup cols={2}>
+  <Card title="summary-2025.md" icon="file-lines">
+    Human-readable return summary with every line item, tax brackets, and state/local breakdown
+  </Card>
+  <Card title="return-2025.json" icon="code">
+    Machine-readable return data with all W-2 fields, Form 1040 lines, bracket detail, and state information
+  </Card>
+</CardGroup>
+
+## Reading the Summary
+
+### Income Section
+
+```markdown
+Wages (Line 1a):              $52,000.00
+Total Income (Line 9):        $52,000.00
+```
+
+- **Line 1a**: Total wages from all W-2s (Box 1)
+- **Line 9**: Total income (equals Line 1a for W-2-only filers)
+
+### Adjustments Section
+
+```markdown
+Student Loan Interest (Schedule 1, Line 21):  $1,200.00
+Total Adjustments (Line 10):                  $1,200.00
+Adjusted Gross Income (Line 11):             $50,800.00
+```
+
+- **Schedule 1, Line 21**: Student loan interest deduction (max $2,500, subject to phaseout)
+- **Line 10**: Total adjustments to income
+- **Line 11**: AGI = Total Income - Adjustments (this is your most important number)
+
+<Note>
+Your AGI determines eligibility for many credits and deductions. Lower AGI = more tax benefits.
+</Note>
+
+### Deductions Section
+
+```markdown
+Standard Deduction (Line 12a):    $15,750.00
+Schedule 1-A Deductions (Line 12c):   $500.00
+Total Deductions (Line 14):        $16,250.00
+Taxable Income (Line 15):          $34,550.00
+```
+
+- **Line 12a**: Standard deduction ($15,750 under 65, $17,750 if 65+)
+- **Line 12c**: Schedule 1-A deductions (tips, overtime, car loan interest, senior deduction)
+- **Line 14**: Total deductions
+- **Line 15**: Taxable income = AGI - Total Deductions (this is what gets taxed)
+
+### Tax Calculation Section
+
+```markdown
+Tax Brackets (Single, 2025):
+  10% on $11,925:               $1,192.50
+  12% on $22,625:               $2,715.00
+Total Tax (Line 16):             $3,907.50
+```
+
+EZFile shows exactly how your tax is calculated using the 2025 single filer brackets:
+
+| Income Range | Rate | Your Income in Bracket | Tax |
+|---|---|---|---|
+| $0 - $11,925 | 10% | $11,925 | $1,192.50 |
+| $11,926 - $34,550 | 12% | $22,625 | $2,715.00 |
+| **Total** | | | **$3,907.50** |
+
+<Warning>
+Taxable income below $0 is treated as $0. You never get a "negative" tax.
+</Warning>
+
+### Credits Section
+
+```markdown
+Nonrefundable Credits:
+  Saver's Credit (Form 8880):      $200.00
+Total Nonrefundable Credits:       $200.00
+Tax After Credits (Line 22):     $3,707.50
+```
+
+- **Nonrefundable credits** reduce your tax but can't make it negative
+- **Refundable credits** (like EIC) can give you money even if you owe no tax
+
+### Payments and Refund Section
+
+```markdown
+Federal Tax Withheld (Line 25a):   $8,400.00
+Earned Income Credit (Line 27a):       $0.00
+Total Payments (Line 33):          $8,400.00
+
+Total Tax (Line 24):               $3,707.50
+YOUR REFUND (Line 34):             $4,692.50
+```
+
+- **Line 25a**: Federal tax withheld from your W-2(s) (Box 2)
+- **Line 27a**: Earned Income Credit (refundable)
+- **Line 33**: Total payments and refundable credits
+- **Line 34**: Refund = Total Payments - Total Tax (if positive)
+- **Line 37**: Amount Owed = Total Tax - Total Payments (if positive)
+
+<Note>
+You'll either have a refund OR amount owed, never both.
+</Note>
+
+## State and Local Tax Summary
+
+If your W-2 includes state/local taxes, EZFile shows:
+
+```markdown
+STATE: Pennsylvania
+State Wages (Box 16):          $47,808.35
+State Rate:                    3.07%
+State Tax:                     $1,467.72
+State Withheld (Box 17):       $1,467.72
+State Refund/Owed:                 $0.00
+
+LOCAL: Pittsburgh (PSD 500101)
+Local Wages (Box 18):          $47,808.35
+Local Rate:                    3.0%
+Local Tax:                     $1,434.25
+Local Withheld (Box 19):       $1,434.25
+Local Refund/Owed:                 $0.00
+```
+
+### Key Differences
+
+- **State wages** (Box 16) may differ from federal wages (Box 1)
+- Some states (like PA) tax retirement contributions that the federal government doesn't
+- **Local taxes** are common in PA, OH, and a few other states
+
+## Common Questions
+
+<AccordionGroup>
+  <Accordion title="Why is my state refund different from federal?">
+    State and federal calculations are independent:
+    - Different tax rates and brackets
+    - Different deductions (many states don't allow student loan deduction)
+    - Different wage bases (Box 16 vs Box 1)
+  </Accordion>
+
+  <Accordion title="What if my taxable income is negative?">
+    If AGI minus deductions is negative, taxable income becomes $0. You don't get a "negative tax," but your tax will be $0 before credits.
+  </Accordion>
+
+  <Accordion title="Why do I see cents in some places but not others?">
+    EZFile calculates with exact cents throughout but rounds only at final steps per IRS rules. Form 1040 lines show whole dollars.
+  </Accordion>
+
+  <Accordion title="What if I owe instead of getting a refund?">
+    If Total Tax > Total Payments, you'll see "Amount Owed" instead of "Refund." You can pay when filing or set up a payment plan with the IRS.
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+Once you understand your return:
+
+1. Review all numbers carefully
+2. Use the `/ezfile:checklist` command for step-by-step filing instructions
+3. File at [Free File Fillable Forms](https://www.freefilefillableforms.com/)
+4. Track your refund at [Where's My Refund?](https://www.irs.gov/refunds)

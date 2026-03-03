@@ -1,0 +1,341 @@
+---
+title: 'calculate'
+description: 'Calculate or recalculate your complete Form 1040 federal tax return'
+---
+
+## Overview
+
+The `calculate` command computes your complete Form 1040 (or 1040-SR) federal tax return line by line. Use this command to recalculate your return after making changes (adding deductions, updating data, etc.) or to manually calculate a return from existing W-2 data.
+
+## Syntax
+
+```bash
+/ezfile:calculate
+```
+
+<Note>
+This command has no arguments. It reads existing W-2 data and intake answers from `./returns/` directory.
+</Note>
+
+## Prerequisites
+
+Before running `calculate`, you must have W-2 data available:
+
+- Run `/ezfile:file-taxes <path-to-w2>` first, OR
+- Manually enter W-2 data in the `./returns/` directory
+
+If no data exists, the command returns:
+```
+No W-2 data found. Run `/ezfile:file-taxes <path-to-w2>` first.
+```
+
+## What It Does
+
+1. **Reads return data** - Loads W-2 data and intake answers from `./returns/`
+2. **Reads reference files** - Loads 2025 tax brackets, deduction rules, and credit rules
+3. **Runs 10-step calculation** - Computes every Form 1040 line from income to refund/owed
+4. **Verifies invariants** - Checks that all line items follow IRS rules
+5. **Saves results** - Writes complete return to `./returns/return-2025.json`
+6. **Displays summary** - Shows full return summary with all line items
+
+## The 10-Step Calculation Pipeline
+
+### Step 1: Income
+
+```python
+Line_1a = Sum of W-2 Box 1 from all W-2s
+Line_1z = Line_1a  # Only W-2 income for this profile
+Line_9  = Line_1z  # Total income = wages only
+```
+
+### Step 2: Adjustments to Income (Schedule 1)
+
+Only student loan interest applies for EZFile users:
+
+```python
+if student_loan_interest > 0:
+    raw = min(student_loan_interest, 2500)
+    MAGI = Line_9  # Total income, before adjustments
+
+    if MAGI <= 85000:
+        deduction = raw
+    elif MAGI >= 100000:
+        deduction = 0
+    else:
+        deduction = raw * (1 - (MAGI - 85000) / 15000)
+        deduction = round(deduction, 2)
+
+    Schedule_1_Line_21 = deduction
+    Schedule_1_Line_26 = deduction
+    Line_10 = deduction
+else:
+    Line_10 = 0
+```
+
+### Step 3: Adjusted Gross Income
+
+```python
+Line_11 = Line_9 - Line_10
+```
+
+<Tip>
+**This is your AGI** - the most important number on your return. It determines eligibility for credits and deduction phaseouts.
+</Tip>
+
+### Step 4: Schedule 1-A Deductions (New for 2025)
+
+Calculate each applicable deduction with MAGI phaseout:
+
+```python
+MAGI_for_1A = Line_11  # AGI
+
+# Phaseout function (shared by all Schedule 1-A deductions)
+def apply_phaseout(amount, magi):
+    if magi <= 75000: return amount
+    if magi >= 100000: return 0
+    return round(amount * (1 - (magi - 75000) / 25000), 2)
+
+# Tip deduction (Line 1)
+tip_deduction = apply_phaseout(tip_income, MAGI_for_1A)
+
+# Overtime deduction (Line 2)
+overtime_deduction = apply_phaseout(overtime_pay, MAGI_for_1A)
+
+# Auto loan interest (Line 3) -- max $10,000
+auto_loan_deduction = apply_phaseout(min(auto_loan_interest, 10000), MAGI_for_1A)
+
+# Senior deduction (Line 4) -- only if age 65+
+if age >= 65:
+    senior_1a_deduction = apply_phaseout(4000, MAGI_for_1A)
+else:
+    senior_1a_deduction = 0
+
+Schedule_1A_Line_5 = tip_deduction + overtime_deduction + auto_loan_deduction + senior_1a_deduction
+Line_12c = Schedule_1A_Line_5
+```
+
+### Step 5: Standard Deduction
+
+```python
+if age >= 65:
+    Line_12a = 17750  # Single, 65+: $15,750 + $2,000 additional
+else:
+    Line_12a = 15750  # Single, under 65
+```
+
+### Step 6: Total Deductions
+
+```python
+Line_12b = 0  # No charitable deduction for this profile
+Line_13 = 0   # No QBI deduction for W-2 filers
+Line_14 = Line_12a + Line_12b + Line_12c + Line_13
+```
+
+### Step 7: Taxable Income
+
+```python
+Line_15 = max(Line_11 - Line_14, 0)
+```
+
+### Step 8: Tax from Brackets
+
+Apply 2025 single filer brackets:
+
+```python
+taxable = Line_15
+
+if taxable <= 11925:
+    tax = taxable * 0.10
+elif taxable <= 48475:
+    tax = 1192.50 + (taxable - 11925) * 0.12
+elif taxable <= 103350:
+    tax = 5578.50 + (taxable - 48475) * 0.22
+elif taxable <= 197300:
+    tax = 17651.00 + (taxable - 103350) * 0.24
+elif taxable <= 250525:
+    tax = 40099.00 + (taxable - 197300) * 0.32
+elif taxable <= 626350:
+    tax = 57131.00 + (taxable - 250525) * 0.35
+else:
+    tax = 188769.75 + (taxable - 626350) * 0.37
+
+Line_16 = round(tax, 2)
+```
+
+### Step 9: Credits
+
+**Saver's Credit (Form 8880) - Nonrefundable:**
+
+```python
+retirement_contributions = sum of W-2 Box 12 amounts for codes D, E, G, AA, BB
+eligible_amount = min(retirement_contributions, 2000)
+
+if eligible_amount > 0:
+    if Line_11 <= 23750:
+        credit_rate = 0.50
+    elif Line_11 <= 25750:
+        credit_rate = 0.20
+    elif Line_11 <= 39500:
+        credit_rate = 0.10
+    else:
+        credit_rate = 0
+
+    savers_credit = round(eligible_amount * credit_rate, 2)
+    savers_credit = min(savers_credit, Line_16)  # Can't exceed tax
+else:
+    savers_credit = 0
+
+Line_19 = savers_credit
+```
+
+**Earned Income Credit - Refundable:**
+
+```python
+if Line_11 < 19104 and age >= 25 and age <= 64:
+    earned_income = Line_1a
+
+    if earned_income <= 8490:
+        eic = round(earned_income * 0.0765, 2)
+    elif earned_income <= 10330:
+        eic = 649  # Maximum
+    else:
+        eic = max(round(649 - (earned_income - 10330) * 0.0765, 2), 0)
+
+    # Also check against AGI
+    if Line_11 > 10330:
+        agi_eic = max(round(649 - (Line_11 - 10330) * 0.0765, 2), 0)
+        eic = min(eic, agi_eic)
+
+    Line_27 = eic
+else:
+    Line_27 = 0
+```
+
+**Total Tax:**
+
+```python
+Line_22 = max(Line_16 - Line_19, 0)
+Line_24 = Line_22  # No additional taxes for this profile
+```
+
+### Step 10: Payments & Result
+
+```python
+Line_25a = Sum of W-2 Box 2 from all W-2s
+Line_25d = Line_25a
+Line_33 = Line_25d + Line_27  # Withholding + refundable credits
+
+if Line_33 > Line_24:
+    Line_34 = Line_33 - Line_24  # REFUND
+    Line_37 = 0
+else:
+    Line_34 = 0
+    Line_37 = Line_24 - Line_33  # AMOUNT OWED
+```
+
+## Verification
+
+After computing, the command verifies these invariants:
+
+<Steps>
+  <Step title="Line 11 = Line 9 - Line 10">AGI equals total income minus adjustments</Step>
+  <Step title="Line 15 = max(Line 11 - Line 14, 0)">Taxable income cannot be negative</Step>
+  <Step title="Line 15 >= 0">Taxable income is non-negative</Step>
+  <Step title="Line 16 >= 0">Tax is non-negative</Step>
+  <Step title="Line 22 = max(Line 16 - Line 19, 0)">Tax after credits cannot be negative</Step>
+  <Step title="Line 24 = Line 22">Total tax equals tax after credits (no additional taxes)</Step>
+  <Step title="Line 33 = Line 25d + Line 27">Total payments equals withholding plus refundable credits</Step>
+  <Step title="Line 34 XOR Line 37 > 0">Either refund or amount owed, not both</Step>
+</Steps>
+
+If any invariant fails, the command displays the error and recomputes.
+
+## Output Format
+
+### Console Display
+
+```
+2025 FEDERAL TAX RETURN SUMMARY
+Filing Status: Single
+Form: 1040
+
+INCOME
+  Line 1a  Wages (W-2 Box 1):        $44,629.35
+  Line 9   Total income:             $44,629.35
+
+ADJUSTMENTS TO INCOME
+  Line 10  Student loan interest:     -$1,800.00  ← Schedule 1
+  Line 11  Adjusted Gross Income:    $42,829.35
+
+DEDUCTIONS
+  Line 12a Standard deduction:       -$15,750.00
+  Line 12c Schedule 1-A deductions:        $0.00
+  Line 14  Total deductions:         -$15,750.00
+  Line 15  Taxable income:           $27,079.35
+
+TAX CALCULATION
+  10% on first $11,925:               $1,192.50
+  12% on next $15,154.35:             $1,818.52
+  Line 16  Tax:                        $3,011.02
+  Line 19  Saver's Credit:              -$205.35
+  Line 22  Tax after credits:          $2,805.67
+  Line 24  TOTAL TAX:                  $2,805.67
+
+PAYMENTS
+  Line 25a Federal tax withheld:       $4,200.00
+  Line 27  Earned Income Credit:          $0.00
+  Line 33  TOTAL PAYMENTS:             $4,200.00
+
+─────────────────────────────────────────────────
+  Line 34  YOUR REFUND:                $1,394.33
+  → Choose direct deposit for fastest refund (~21 days)
+─────────────────────────────────────────────────
+```
+
+### Files Created
+
+**`./returns/return-2025.json`** - Complete return data:
+
+```json
+{
+  "tax_year": 2025,
+  "filing_status": "single",
+  "form": "1040",
+  "line_1a": 44629.35,
+  "line_9": 44629.35,
+  "line_10": 1800.00,
+  "line_11": 42829.35,
+  "line_12a": 15750.00,
+  "line_12c": 0,
+  "line_14": 15750.00,
+  "line_15": 27079.35,
+  "line_16": 3011.02,
+  "line_19": 205.35,
+  "line_22": 2805.67,
+  "line_24": 2805.67,
+  "line_25a": 4200.00,
+  "line_27": 0,
+  "line_33": 4200.00,
+  "line_34": 1394.33,
+  "line_37": 0,
+  "schedules": {
+    "schedule_1": { "line_21": 1800.00, "line_26": 1800.00 },
+    "schedule_1a": { "line_1": 0, "line_2": 0, "line_3": 0, "line_4": 0, "line_5": 0 }
+  }
+}
+```
+
+## Next Steps
+
+After calculating, the command suggests:
+
+- Run `/ezfile:checklist` for filing instructions
+- Run `/ezfile:explain <topic>` for explanations
+- Run `/ezfile:review` to see the summary again
+
+## Related Commands
+
+- [file-taxes](/commands/file-taxes) - Main command to upload W-2 and calculate
+- [add-1098e](/commands/add-1098e) - Add student loan interest before recalculating
+- [review](/commands/review) - Display return summary
+- [explain](/commands/explain) - Understand any line or calculation

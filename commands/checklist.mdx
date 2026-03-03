@@ -1,0 +1,374 @@
+---
+title: 'checklist'
+description: 'Step-by-step guide to file at freefilefillableforms.com'
+---
+
+## Overview
+
+The `checklist` command generates a complete, step-by-step guide to file your calculated return at **freefilefillableforms.com** (the IRS Free File Fillable Forms). It shows exactly which fields to fill and what values to enter, line by line.
+
+## Syntax
+
+```bash
+/ezfile:checklist
+```
+
+<Note>
+This command has no arguments. It reads your calculated return from `./returns/return-2025.json` and generates personalized filing instructions.
+</Note>
+
+## Prerequisites
+
+You must have a calculated return. If no return data exists:
+
+```
+No return data found. Run `/ezfile:file-taxes <path-to-w2>` to calculate your return first.
+```
+
+## What It Does
+
+1. **Gathers required items** - Lists everything you need before starting
+2. **Walks through account creation** - Shows how to set up your Free File Fillable Forms account
+3. **Provides line-by-line instructions** - Tells you exactly what to enter in each field using YOUR numbers
+4. **Handles schedules** - If you need Schedule 1 or Schedule 1-A, shows how to add and fill them
+5. **Reviews and submits** - Final checks before e-filing
+6. **After-filing checklist** - What to do after you file
+7. **State return guidance** - State-specific filing instructions based on your W-2
+
+## Disclaimer (Shown First)
+
+<Warning>
+**EZFile is a tax calculation assistant, not a licensed tax preparer or tax advisor.** It does not file your taxes -- you must file yourself at freefilefillableforms.com or another IRS-approved method. Review all numbers carefully before entering them. You are responsible for the accuracy of your tax return. For complex situations, consult a CPA or enrolled agent.
+</Warning>
+
+## Part 1: Before You Start
+
+```
+BEFORE YOU START — Gather These Items
+
+  [ ] Your W-2 (the original, not EZFile's summary)
+  [ ] Your Social Security Number (you'll need the full number to file)
+  [ ] Your date of birth
+  [ ] Your current mailing address
+  [ ] Last year's AGI (from your 2024 tax return, needed for identity verification)
+      → If you didn't file last year, you'll need your prior year Self-Select PIN
+      → If this is your first time filing, enter $0
+  [ ] Bank account info for direct deposit (routing number + account number)
+      → Check or savings account
+      → This is optional but gets your refund 2-3 weeks faster
+  [ ] 1098-E form (if claiming student loan interest deduction)
+```
+
+<Tip>
+**Finding your routing and account numbers**: Look at the bottom of your checks, or check your bank's mobile app under "account details" or "direct deposit information."
+</Tip>
+
+## Part 2: Create Your Account
+
+<Steps>
+  <Step title="Go to Free File Fillable Forms">
+    Navigate to https://www.freefilefillableforms.com/
+  </Step>
+  
+  <Step title="Start the application">
+    Click "Start Free File Fillable Forms"
+  </Step>
+  
+  <Step title="Create account">
+    Enter your SSN, name, date of birth, and prior year AGI for identity verification. Create a username and password.
+    
+    <Warning>SAVE these credentials -- you'll need them if you come back to edit your return.</Warning>
+  </Step>
+  
+  <Step title="Select your form">
+    - Choose **Form 1040** if you're under 65
+    - Choose **Form 1040-SR** if you're 65 or older
+  </Step>
+</Steps>
+
+## Part 3: Fill In Form 1040
+
+The checklist provides specific values for each line based on YOUR return:
+
+### Personal Information
+
+```
+STEP 5: Personal Information (top of Form 1040)
+  - First name and middle initial: [Your name from W-2]
+  - Last name: [Your last name]
+  - Social Security Number: [Enter your full SSN]
+  - Filing status: Check "Single"
+  - Digital assets: Check "No" (unless you sold/traded cryptocurrency)
+```
+
+### Income Section
+
+```
+STEP 7: Income
+  - Line 1a: Enter $44,629.35
+    (This is your wages from W-2 Box 1)
+  - Line 1z: Enter $44,629.35 (same as 1a)
+  - Line 9: Enter $44,629.35
+    (Total income — same as 1z for your situation)
+```
+
+### Schedule 1 (If Applicable)
+
+If you have student loan interest:
+
+```
+STEP 7a: Add Schedule 1
+  - Click "Add Form" → search "Schedule 1" → select it
+  - Line 21: Enter $1,800.00
+    (Your student loan interest deduction)
+  - Line 26: Enter $1,800.00
+    (Same as Line 21 for your situation)
+  - Return to Form 1040
+  - Line 10: Enter $1,800.00
+    (This is Schedule 1, Line 26)
+```
+
+### AGI and Deductions
+
+```
+STEP 8: AGI
+  - Line 11: Enter $42,829.35
+    (This is your Adjusted Gross Income: Line 9 minus Line 10)
+
+STEP 9: Deductions
+  - Line 12a: Enter $15,750.00
+    (Standard deduction for single filer under 65)
+  - Check the "You as a dependent" box: NO
+  - Line 12b: Enter $0
+```
+
+### Schedule 1-A (If Applicable)
+
+If you claimed tip, overtime, auto loan, or senior deductions:
+
+```
+STEP 9a: Add Schedule 1-A
+  - Click "Add Form" → search "Schedule 1-A" → select it
+  - Line 1: Enter $[tip_amount] (tip deduction)     [if applicable]
+  - Line 2: Enter $[overtime_amount] (overtime deduction) [if applicable]
+  - Line 3: Enter $[auto_amount] (auto loan interest) [if applicable]
+  - Line 4: Enter $[senior_amount] (senior deduction)   [if applicable]
+  - Line 5: Enter $[total] (total)
+  - Return to Form 1040
+  - Line 12c: Enter $[total]
+    (This is Schedule 1-A, Line 5)
+```
+
+### Tax and Credits
+
+```
+STEP 11: Taxable Income
+  - Line 15: Enter $27,079.35
+    (Line 11 minus Line 14, or $0 if negative)
+
+STEP 12: Tax
+  - Line 16: Enter $3,011.02
+    (Tax from brackets — EZFile calculated this for you)
+```
+
+If you have Saver's Credit:
+
+```
+STEP 13a: Add Form 8880 (Saver's Credit)
+  - Click "Add Form" → search "8880" → select it
+  - Fill in your retirement contribution amount and AGI
+  - The credit flows to Schedule 3, Line 4
+  - Then to Form 1040, Line 19
+  - Line 19: Enter $205.35
+```
+
+### Payments and Refund
+
+```
+STEP 15: Payments
+  - Line 25a: Enter $4,200.00
+    (Federal tax withheld — from W-2 Box 2)
+  - Line 25d: Enter $4,200.00
+    (Same as 25a for your situation)
+```
+
+If you have a refund:
+
+```
+STEP 17: Your Refund!
+  - Line 34: Enter $1,394.33
+    (Line 33 minus Line 24 — this is your refund!)
+  - Line 35a: Enter $1,394.33
+    (Amount you want refunded)
+  - Check "Direct deposit":
+    - Line 35b: Enter your bank routing number (9 digits)
+    - Line 35c: Select "Checking" or "Savings"
+    - Line 35d: Enter your bank account number
+```
+
+<Tip>
+**Direct deposit tip**: Your routing and account numbers are on the bottom of your checks, or in your bank's mobile app under "account details."
+</Tip>
+
+If you owe money:
+
+```
+STEP 17: Amount You Owe
+  - Line 37: Enter $[amount_owed]
+    (Line 24 minus Line 33 — this is what you owe)
+  - You can pay online at https://www.irs.gov/payments
+  - Due by April 15, 2026
+```
+
+## Part 4: Review and Submit
+
+<Steps>
+  <Step title="Review">
+    Click "Review" or "Check for Errors". Free File Fillable Forms will flag obvious issues.
+    
+    Double-check these key numbers against your W-2:
+    - [ ] Line 1a matches W-2 Box 1
+    - [ ] Line 25a matches W-2 Box 2
+    - [ ] Your SSN is correct
+    - [ ] Your name matches your Social Security card
+  </Step>
+  
+  <Step title="Sign and Submit">
+    - Enter your occupation (your job title)
+    - Enter your phone number
+    - Enter your Identity Protection PIN (if you have one from the IRS)
+    - E-sign the return
+    - Click "Submit" or "File"
+  </Step>
+  
+  <Step title="Save Confirmation">
+    - Save your confirmation number
+    - Download or print a PDF copy of your filed return
+    - Store it securely for at least 3 years (IRS audit window)
+  </Step>
+</Steps>
+
+## Part 5: After Filing
+
+```
+AFTER YOU FILE:
+
+  [ ] Save your confirmation number: _______________
+  [ ] Download a PDF copy of your return
+  [ ] Check refund status in ~24 hours at:
+      https://www.irs.gov/refunds ("Where's My Refund?")
+  [ ] Expected refund timeline:
+      - E-file + direct deposit: ~21 days
+      - E-file + paper check: ~4-6 weeks
+  [ ] Keep your W-2 and return copy for 3 years minimum
+  [ ] Delete or securely store the files in ./returns/
+```
+
+## Part 6: State Return Guidance
+
+The checklist provides state-specific instructions based on your W-2 Box 15:
+
+### No-Income-Tax States
+
+If you live in AK, FL, NV, NH, SD, TN, TX, WA, or WY:
+
+<Tip>
+Good news -- your state has no income tax. No state return needed!
+</Tip>
+
+### States with Simple Filing
+
+<CardGroup cols={2}>
+  <Card title="Pennsylvania" icon="landmark">
+    PA uses a flat 3.07% rate.
+    
+    File at: https://www.revenue.pa.gov/ (myPATH)
+    
+    Your PA tax: Box 16 × 3.07% = $1,370.12
+  </Card>
+  
+  <Card title="Illinois" icon="landmark">
+    IL uses a flat 4.95% rate on federal AGI minus $2,850 personal exemption.
+    
+    File at: https://mytax.illinois.gov/
+  </Card>
+  
+  <Card title="Colorado" icon="landmark">
+    CO uses a flat 4.40% rate on your federal taxable income (Line 15).
+    
+    File at: https://tax.colorado.gov/ (Revenue Online)
+  </Card>
+  
+  <Card title="Arizona" icon="landmark">
+    AZ uses a flat 2.50% rate with a standard deduction matching federal ($15,750).
+    
+    File at: https://azdor.gov/ (AZTaxes)
+  </Card>
+</CardGroup>
+
+### States with Progressive Brackets
+
+For NY, CA, CT, NJ, and other states with progressive tax systems, the checklist provides:
+
+- Link to state tax website
+- Brief description of state tax system (rates, deductions, credits)
+- Special notes (e.g., renter credits, property tax deductions)
+- State-specific deadline if different from April 15
+
+<Warning>
+**Special Deadlines:**
+
+- **Virginia**: May 1 (not April 15)
+- **Hawaii**: April 20
+- **Delaware**: April 30
+- **Iowa**: April 30
+- **Louisiana**: May 15
+</Warning>
+
+## Form Field Reference
+
+The checklist shows how EZFile line numbers map to Free File Fillable Forms fields:
+
+| EZFile Line | Form 1040 Field | Description |
+|-------------|-----------------|-------------|
+| Line 1a | 1a | Wages from W-2 Box 1 |
+| Line 10 | 10 | Student loan interest |
+| Line 11 | 11 | AGI |
+| Line 12a | 12a | Standard deduction |
+| Line 15 | 15 | Taxable income |
+| Line 16 | 16 | Tax |
+| Line 19 | 19 | Saver's Credit |
+| Line 24 | 24 | Total tax |
+| Line 25a | 25a | Federal withheld |
+| Line 27 | 27 | Earned Income Credit |
+| Line 34 | 34 | Refund |
+| Line 37 | 37 | Amount owed |
+
+## Common Filing Mistakes
+
+<Warning>
+**Avoid These Common Errors:**
+
+1. **Wrong SSN** - Double-check your Social Security Number matches your SS card EXACTLY
+2. **Name mismatch** - Use your legal name as it appears on your SS card (maiden name vs married name)
+3. **Math errors** - Let the software calculate for you; don't override calculated fields
+4. **Forgetting to sign** - The return isn't filed until you e-sign it
+5. **Wrong bank account** - Double-check routing and account numbers for direct deposit
+6. **Missing schedules** - If you claimed deductions, make sure you attached Schedule 1 or 1-A
+</Warning>
+
+## Getting Help
+
+If you have questions while filing:
+
+- **Free File Fillable Forms help**: Click the "?" icon next to any field
+- **IRS help line**: 1-800-829-1040 (7am-7pm local time, Mon-Fri)
+- **EZFile explanations**: Run `/ezfile:explain <topic>` to understand any concept
+- **Professional help**: If your situation is complex, consult a CPA or enrolled agent
+
+## Related Commands
+
+- [review](/commands/review) - Review your complete return before filing
+- [explain](/commands/explain) - Understand what any line item means
+- [file-taxes](/commands/file-taxes) - Recalculate your return if you need to make changes
+- [calculate](/commands/calculate) - Manually recalculate after updates

@@ -1,0 +1,104 @@
+---
+title: 'Installation'
+description: 'Install EZFile from the Claude Code marketplace or from the GitHub repository'
+---
+
+## From the Claude Code Marketplace
+
+The quickest way to install EZFile is directly from the Claude Code marketplace.
+
+<Steps>
+  <Step title="Open the plugin browser">
+    In Claude Code, run:
+    ```bash
+    /plugin
+    ```
+    Then search for "ezfile" in the plugin browser.
+  </Step>
+  
+  <Step title="Install EZFile">
+    Or install directly with:
+    ```bash
+    /plugin install ezfile@stat-guy-ezFile
+    ```
+  </Step>
+  
+  <Step title="Verify installation">
+    Test that EZFile is working:
+    ```bash
+    /ezfile:explain standard deduction
+    ```
+    If EZFile responds with a plain-English explanation, you're all set.
+  </Step>
+</Steps>
+
+<Tip>
+  To load EZFile automatically in every session, add the marketplace to your Claude Code settings:
+  
+  ```bash
+  /plugin marketplace add stat-guy/ezFile
+  /plugin install ezfile@stat-guy-ezFile
+  ```
+</Tip>
+
+## From the GitHub Repository
+
+If you prefer to install from source or want to contribute to development:
+
+<Steps>
+  <Step title="Clone the repository">
+    ```bash
+    git clone https://github.com/stat-guy/ezFile.git ~/ezfile
+    ```
+  </Step>
+  
+  <Step title="Launch Claude Code with the plugin">
+    ```bash
+    claude --plugin-dir ~/ezfile
+    ```
+  </Step>
+  
+  <Step title="Verify installation">
+    Test that EZFile is working:
+    ```bash
+    /ezfile:explain standard deduction
+    ```
+    If EZFile responds with a plain-English explanation, you're all set.
+  </Step>
+</Steps>
+
+<Note>
+  When installing from the repository, the plugin will need to be loaded each time you start Claude Code using the `--plugin-dir` flag, unless you add it to your Claude Code configuration.
+</Note>
+
+## Available Commands
+
+Once installed, EZFile provides these commands:
+
+| Command | Description |
+|---|---|
+| `/ezfile:file-taxes <path>` | Upload W-2 and calculate your complete return |
+| `/ezfile:add-1098e <amount\|path>` | Add student loan interest deduction |
+| `/ezfile:calculate` | Recalculate your return after changes |
+| `/ezfile:review` | Display your return summary |
+| `/ezfile:explain <topic>` | Explain any tax concept in plain English |
+| `/ezfile:checklist` | Step-by-step guide to file at freefilefillableforms.com |
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card
+    title="Quick Start"
+    icon="rocket"
+    href="/quickstart"
+  >
+    Try EZFile with a sample W-2 to see your first tax calculation in under 2 minutes.
+  </Card>
+  <Card
+    title="Main Workflow"
+    icon="circle-play"
+    href="/commands/file-taxes"
+  >
+    Learn how to process your real W-2 and calculate your actual tax return.
+  </Card>
+</CardGroup>

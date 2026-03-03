@@ -1,0 +1,241 @@
+---
+title: Filing Instructions
+description: Complete step-by-step guide to filing at Free File Fillable Forms
+---
+
+EZFile calculates your tax return, but you must file it yourself at [Free File Fillable Forms](https://www.freefilefillableforms.com/). This guide walks you through every field.
+
+<Note>
+Free File Fillable Forms does very little math for you. You must calculate most values yourself and enter them manually -- that's exactly what EZFile does.
+</Note>
+
+## Before You Start
+
+You'll need:
+
+- Your completed return summary from EZFile
+- Your original W-2 (for your full SSN)
+- Your bank account info (for direct deposit)
+- Prior year AGI or self-select PIN
+
+## Step 1: Create Your Account
+
+<Steps>
+  <Step title="Go to Free File Fillable Forms">
+    Visit https://www.freefilefillableforms.com/
+  </Step>
+  
+  <Step title="Create an account">
+    You'll need:
+    - Your full SSN
+    - Date of birth
+    - Prior year AGI (from last year's return) OR prior year self-select PIN
+  </Step>
+  
+  <Step title="Select Form 1040">
+    Choose "Form 1040" (or "Form 1040-SR" if you're 65 or older)
+  </Step>
+</Steps>
+
+## Step 2: Personal Information
+
+Click on each field and type the value:
+
+| Field | What to Enter | Source |
+|---|---|---|
+| First name and middle initial | Your legal name | W-2 Box e |
+| Last name | Your legal last name | W-2 Box e |
+| Social security number | Your **full** SSN | W-2 Box a |
+| Filing status | Check "Single" | Always Single for EZFile users |
+| Digital assets question | Check "No" | Unless you had crypto |
+
+<Warning>
+**Important:** Unlike EZFile, you WILL enter your full SSN on the actual tax form. EZFile masks it for privacy during calculation, but you need the real number to file.
+</Warning>
+
+## Step 3: Address Section
+
+| Field | What to Enter | Source |
+|---|---|---|
+| Home address | Your current mailing address | May differ from W-2 Box f |
+| City, state, ZIP | Current city, state, ZIP | -- |
+
+## Step 4: Income Section
+
+| Line | Field Name | Value to Enter | Source |
+|---|---|---|---|
+| 1a | Wages, salaries, tips | [From your return] | Sum of all W-2 Box 1 amounts |
+| 1z | Add lines 1a through 1h | Same as Line 1a | For W-2 only, just 1a |
+| 9 | Total income | Line 1z + Line 8 | Line 8 from Schedule 1 if applicable |
+
+## Step 5: Adjustments Section
+
+<Accordion title="If you have student loan interest">
+  You'll need to add Schedule 1 first:
+  
+  1. Click "Add Form" or "+" button
+  2. Search for "Schedule 1"
+  3. Select "Schedule 1 (Form 1040)"
+  
+  Then fill Schedule 1:
+  
+  | Line | Field Name | Value |
+  |---|---|---|
+  | 21 | Student loan interest deduction | [From your return] |
+  | 26 | Total adjustments | Same as Line 21 |
+  
+  The value flows to Form 1040 Line 10.
+</Accordion>
+
+| Line | Field Name | Value to Enter | Source |
+|---|---|---|---|
+| 10 | Adjustments to income | [Schedule 1, Line 26] | Student loan interest |
+| 11 | Adjusted gross income | Line 9 - Line 10 | This is your AGI |
+
+## Step 6: Deductions Section
+
+| Line | Field Name | Value to Enter | Source |
+|---|---|---|---|
+| 12a | Standard deduction | $15,750 or $17,750 | $15,750 under 65, $17,750 if 65+ |
+| 12b | Charitable deduction | $0 | Not itemizing |
+| 12c | Add Schedule 1-A | [From your return] | Tips/overtime/car/senior |
+| 13 | Qualified business income | $0 | W-2 only, no QBI |
+| 14 | Total deductions | 12a + 12b + 12c + 13 | Sum |
+| 15 | Taxable income | Line 11 - Line 14 | Cannot be negative |
+
+<Accordion title="If you have Schedule 1-A deductions">
+  You'll need to add Schedule 1-A:
+  
+  1. Click "Add Form"
+  2. Search for "Schedule 1-A"
+  3. Select "Schedule 1-A (Form 1040)"
+  
+  Then fill Schedule 1-A:
+  
+  | Line | Field Name | Value |
+  |---|---|---|
+  | 1 | Tip income deduction | [From your return] |
+  | 2 | Overtime pay deduction | [From your return] |
+  | 3 | Auto loan interest | [From your return] |
+  | 4 | Senior deduction | [From your return] |
+  | 5 | Total | Sum of Lines 1-4 |
+  
+  The value flows to Form 1040 Line 12c.
+</Accordion>
+
+## Step 7: Tax Section
+
+| Line | Field Name | Value to Enter | Source |
+|---|---|---|---|
+| 16 | Tax | [From your return] | Calculated from brackets |
+| 17 | Schedule 2, line 21 | $0 | No AMT |
+| 18 | Add lines 16 and 17 | Same as Line 16 | -- |
+| 19 | Nonrefundable credits | [From your return] | Saver's Credit if eligible |
+| 22 | Subtract Line 19 from 18 | Line 18 - Line 19 | Cannot go below $0 |
+| 23 | Other taxes | $0 | -- |
+| 24 | Total tax | Line 22 + Line 23 | Your total federal tax |
+
+<Accordion title="If you have Saver's Credit">
+  You'll need to add Form 8880:
+  
+  1. Click "Add Form"
+  2. Search for "8880"
+  3. Select "Form 8880"
+  
+  Then fill Form 8880:
+  
+  | Line | Value |
+  |---|---|
+  | 1 | Retirement contributions (W-2 Box 12) |
+  | 2 | $2,000 |
+  | 3 | min(Line 1, Line 2) |
+  | 4 | Credit rate (50%, 20%, or 10% based on AGI) |
+  | 5 | Line 3 × Line 4 |
+  
+  The value flows to Schedule 3 Line 4, then to Form 1040 Line 19.
+</Accordion>
+
+## Step 8: Payments Section
+
+| Line | Field Name | Value to Enter | Source |
+|---|---|---|---|
+| 25a | Federal tax withheld from W-2s | [Sum of all W-2 Box 2] | From your return |
+| 25d | Total federal tax withheld | Same as Line 25a | -- |
+| 27a | Earned income credit | [From your return] | If eligible |
+| 33 | Total payments and credits | Line 25d + Line 27a | Total |
+
+## Step 9: Refund or Amount Owed
+
+<Tabs>
+  <Tab title="If you're getting a refund">
+    | Line | Field Name | Value |
+    |---|---|---|
+    | 34 | Overpaid | Line 33 - Line 24 |
+    | 35a | Refunded to you | Same as Line 34 |
+    | 35b | Routing number | Your bank routing number |
+    | 35c | Account type | Checking or Savings |
+    | 35d | Account number | Your bank account number |
+  </Tab>
+  
+  <Tab title="If you owe">
+    | Line | Field Name | Value |
+    |---|---|---|
+    | 37 | Amount you owe | Line 24 - Line 33 |
+    | 38 | Estimated tax penalty | Usually $0 |
+    
+    You can pay when filing or set up a payment plan.
+  </Tab>
+</Tabs>
+
+## Step 10: Signature Section
+
+| Field | What to Enter |
+|---|---|
+| Your signature | E-sign with Free File Fillable Forms |
+| Date | Date you file |
+| Occupation | Your job title |
+| Identity Protection PIN | If you received one from IRS (optional) |
+| Phone number | Your phone number |
+
+## Step 11: Review and Submit
+
+<Steps>
+  <Step title="Review all values">
+    Double-check every number matches your EZFile return summary
+  </Step>
+  
+  <Step title="Run the form check">
+    Free File Fillable Forms will flag any obvious errors
+  </Step>
+  
+  <Step title="E-sign and submit">
+    Use the e-signature feature to sign and file electronically
+  </Step>
+  
+  <Step title="Save confirmation">
+    You'll receive a confirmation number -- save this and download a PDF copy
+  </Step>
+</Steps>
+
+## After You File
+
+<CardGroup cols={2}>
+  <Card title="Track Your Refund" icon="magnifying-glass-dollar" href="https://www.irs.gov/refunds">
+    Use "Where's My Refund?" to track your refund status
+  </Card>
+  <Card title="Typical Timeline" icon="clock">
+    E-filed returns with direct deposit: refund typically arrives in ~21 days
+  </Card>
+</CardGroup>
+
+<Warning>
+Save a PDF copy of your filed return for your records. You'll need your AGI from this return when filing next year.
+</Warning>
+
+## Need Help?
+
+If you have questions while filing:
+
+- Use `/ezfile:explain <topic>` to understand any tax concept
+- Use `/ezfile:review` to see your return summary again
+- Check the [IRS Free File FAQ](https://www.irs.gov/e-file-providers/before-starting-free-file-fillable-forms)

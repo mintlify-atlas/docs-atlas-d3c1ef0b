@@ -1,0 +1,134 @@
+---
+title: 'EZFile - W-2 Tax Filing Assistant'
+description: 'Calculate your federal tax return and file for free. Built for single W-2 filers with no dependents.'
+---
+
+<img
+  className="block dark:hidden"
+  src="/images/hero-light.svg"
+  alt="EZFile Hero Light"
+/>
+<img
+  className="hidden dark:block"
+  src="/images/hero-dark.svg"
+  alt="EZFile Hero Dark"
+/>
+
+## What is EZFile?
+
+EZFile is a Claude Code plugin that helps single W-2 filers calculate their federal tax return and file for free at [Free File Fillable Forms](https://www.freefilefillableforms.com/). Named after the discontinued IRS Form 1040-EZ, which served exactly this demographic before the IRS retired it in 2018.
+
+Upload your W-2, answer a few questions, and get a complete Form 1040 calculated line by line — all processed locally on your machine with full privacy protection.
+
+## Who This Is For
+
+EZFile is designed for straightforward tax situations:
+
+- Single filer (not married)
+- No children or dependents
+- W-2 wage income only (no freelance, 1099s, investments)
+- Renter (no mortgage or property tax)
+- May have federal student loans (1098-E)
+- Tax Year 2025
+
+<Warning>
+  If your situation is more complex, EZFile will tell you and recommend a CPA or full-service tax software.
+</Warning>
+
+## Key Features
+
+<CardGroup cols={2}>
+  <Card
+    title="W-2 Processing"
+    icon="file-invoice"
+  >
+    Upload your W-2 as PDF or image. EZFile extracts and validates all box values with automatic SSN masking.
+  </Card>
+  <Card
+    title="Complete Form 1040"
+    icon="calculator"
+  >
+    Calculates every line of Form 1040 (or 1040-SR for seniors) with full transparency. Every number traces to a W-2 box or IRS constant.
+  </Card>
+  <Card
+    title="Privacy First"
+    icon="shield-check"
+  >
+    All processing happens locally. Tax data never leaves your computer. Full SSNs are never stored or displayed.
+  </Card>
+  <Card
+    title="Filing Guide"
+    icon="list-check"
+  >
+    Step-by-step instructions for entering your return at freefilefillableforms.com with every line item mapped.
+  </Card>
+</CardGroup>
+
+## What's New for 2025
+
+- **Schedule 1-A deductions**: New above-the-line deductions for tips, overtime, car loan interest, and seniors
+- **Updated standard deduction**: $15,750 (Single under 65), $17,750 (Single 65+)
+- **Updated student loan phaseouts**: $85,000-$100,000 (Single)
+- **Form 1040-SR**: Automatically offered for filers born before January 2, 1961
+
+## Get Started
+
+<CardGroup cols={2}>
+  <Card
+    title="Installation"
+    icon="download"
+    href="/installation"
+  >
+    Install EZFile from the Claude Code marketplace or from the GitHub repository.
+  </Card>
+  <Card
+    title="Quick Start"
+    icon="rocket"
+    href="/quickstart"
+  >
+    Process a sample W-2 in under 2 minutes and see your first tax calculation.
+  </Card>
+</CardGroup>
+
+## Supported Tax Situations
+
+| Feature | Supported |
+|---|---|
+| W-2 wage income | Yes |
+| Standard deduction | Yes |
+| Student loan interest (1098-E) | Yes |
+| Schedule 1-A (tips, overtime, car loan, senior) | Yes |
+| Form 1040 | Yes |
+| Form 1040-SR (seniors) | Yes |
+| Saver's Credit | Yes |
+| EIC (no children) | Yes |
+| State returns | Yes (50 states + DC, PR, USVI) |
+
+<Note>
+  EZFile supports all 50 states plus DC, Puerto Rico, and US Virgin Islands — including states with no income tax.
+</Note>
+
+## Not Supported
+
+Use a CPA or full-service tax software if you:
+
+- Are married or have dependents/children
+- Own a home (mortgage interest, property tax)
+- Are self-employed or have 1099 income
+- Have investment income (stocks, crypto, dividends)
+- Need itemized deductions
+- Filed in multiple states
+
+## Privacy & Security
+
+EZFile is designed with privacy as a core principle:
+
+- **Local only**: All processing happens on your machine. Tax data never leaves your computer.
+- **SSN masking**: Full SSNs are never stored or displayed. Only the last 4 digits are shown.
+- **Network blocking**: Hooks prevent any network commands (curl, wget, etc.) from running.
+- **PII protection**: Hooks block SSN/EIN patterns from appearing in web searches.
+- **Output scanning**: Written files are scanned for accidentally exposed SSNs.
+
+<Warning>
+  **Disclaimer**: EZFile is a tax calculation assistant, not a licensed tax preparer or tax advisor. It does not file your taxes — you must file yourself at freefilefillableforms.com or another IRS-approved method. Review all numbers carefully before entering them. You are responsible for the accuracy of your tax return. For complex situations, consult a CPA or enrolled agent.
+</Warning>

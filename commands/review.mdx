@@ -1,0 +1,209 @@
+---
+title: 'review'
+description: 'Display your completed 2025 tax return summary'
+---
+
+## Overview
+
+The `review` command displays your completed federal tax return in a clear, plain-English format. Use this to verify every number before filing or to see your return summary again after it's been calculated.
+
+## Syntax
+
+```bash
+/ezfile:review
+```
+
+<Note>
+This command has no arguments. It reads your calculated return from `./returns/return-2025.json`.
+</Note>
+
+## Prerequisites
+
+You must have a calculated return. If no return data exists, the command returns:
+
+```
+No return data found. Run `/ezfile:file-taxes <path-to-w2>` to calculate your return first.
+```
+
+## What It Does
+
+1. **Reads return data** - Loads complete return from `./returns/return-2025.json`
+2. **Formats summary** - Displays every line item with explanations
+3. **Shows schedule details** - If Schedule 1 or Schedule 1-A was used, shows line-by-line breakdown
+4. **Includes state summary** - If state tax data is available, shows state return summary
+5. **Provides insights** - Displays 2-3 personalized insights (withholding analysis, effective rate, missed opportunities)
+6. **Suggests next steps** - Links to related commands
+
+## Output Format
+
+### Federal Return Summary
+
+```
+═══════════════════════════════════════════════════
+  2025 FEDERAL TAX RETURN SUMMARY
+  Filing Status: Single
+  Form: 1040
+═══════════════════════════════════════════════════
+
+  INCOME
+    Line 1a  Wages (W-2 Box 1):        $44,629.35
+    Line 9   Total income:             $44,629.35
+
+  ADJUSTMENTS TO INCOME
+    Line 10  Student loan interest:     -$1,800.00  ← Schedule 1
+    Line 11  Adjusted Gross Income:    $42,829.35
+
+  DEDUCTIONS
+    Line 12a Standard deduction:       -$15,750.00
+    Line 12c Schedule 1-A deductions:        $0.00
+    Line 14  Total deductions:         -$15,750.00
+    Line 15  Taxable income:           $27,079.35
+
+  TAX CALCULATION
+    10% on first $11,925:               $1,192.50
+    12% on next $15,154.35:             $1,818.52
+    Line 16  Tax:                        $3,011.02
+    Line 19  Saver's Credit:              -$205.35
+    Line 22  Tax after credits:          $2,805.67
+    Line 24  TOTAL TAX:                  $2,805.67
+
+  PAYMENTS
+    Line 25a Federal tax withheld:       $4,200.00
+    Line 27  Earned Income Credit:          $0.00
+    Line 33  TOTAL PAYMENTS:             $4,200.00
+
+  ─────────────────────────────────────────────────
+    Line 34  YOUR REFUND:                $1,394.33
+    → Choose direct deposit for fastest refund (~21 days)
+  ─────────────────────────────────────────────────
+```
+
+### Schedule 1 (If Applicable)
+
+If you claimed student loan interest:
+
+```
+  SCHEDULE 1 — Adjustments to Income
+    Line 21  Student loan interest:     $1,800.00
+    Line 26  Total adjustments:         $1,800.00
+    → Flows to Form 1040, Line 10
+```
+
+### Schedule 1-A (If Applicable)
+
+If you claimed any of these new 2025 deductions:
+
+```
+  SCHEDULE 1-A — Additional Deductions (New for 2025)
+    Line 1   Tip income deduction:      $2,500.00
+    Line 2   Overtime pay deduction:    $1,200.00
+    Line 3   Auto loan interest:          $800.00
+    Line 4   Senior deduction:          $4,000.00
+    Line 5   Total:                     $8,500.00
+    → Flows to Form 1040, Line 12c
+```
+
+### State Tax Summary (If Available)
+
+If state tax data was calculated:
+
+```
+  STATE RETURN — Pennsylvania
+    State wages (Box 16):              $44,629.35
+    State tax owed:                     $1,370.12
+    State tax withheld (Box 17):        $1,370.12
+    State refund/owed:                     $0.00
+```
+
+## Key Insights
+
+The command provides 2-3 personalized insights based on your return:
+
+### 1. Withholding Analysis
+
+If refund > $1,000:
+
+<Tip>
+**Over-withholding detected**: Your employer withheld $4,200.00, which is $1,394.33 more than you owed. That's $116/month that could've been in your paycheck throughout the year. Consider adjusting your W-4 to reduce withholding for 2026.
+</Tip>
+
+### 2. Effective Tax Rate
+
+<Tip>
+**Your effective federal tax rate is 6.3%**. This is your real tax rate ($2,805.67 tax ÷ $44,629.35 income). It's lower than your marginal bracket of 12% because the first $11,925 is taxed at only 10%, and you get deductions.
+</Tip>
+
+### 3. Missed Opportunities
+
+If you were close to qualifying for credits:
+
+<Note>
+**Saver's Credit opportunity**: You earned this credit because you contributed $4,107 to your 403(b). If you had earned $3,329 less (bringing AGI to $39,500), your Saver's Credit would increase from 10% to 20% of contributions, saving an additional $200 in taxes.
+</Note>
+
+Or if you were close to EIC:
+
+<Note>
+**Earned Income Credit**: With AGI of $42,829, you're above the EIC limit ($19,104 for single filers with no children). If you had AGI below $19,104, you could qualify for up to $649 in refundable credit.
+</Note>
+
+## Understanding Your Refund
+
+<AccordionGroup>
+  <Accordion title="Why am I getting a refund?">
+    You get a refund when your employer withheld MORE federal tax from your paychecks than you actually owe. In your case:
+    
+    - Your employer withheld: $4,200.00
+    - Your actual tax: $2,805.67
+    - Difference (refund): $1,394.33
+    
+    Think of it as getting back your own money that the government held interest-free all year.
+  </Accordion>
+
+  <Accordion title="Why do I owe money?">
+    You owe money when your employer withheld LESS federal tax than you actually owe. This can happen if:
+    
+    - Your W-4 was set to withhold too little
+    - You had multiple jobs and each withheld as if it was your only income
+    - You had a mid-year raise that wasn't reflected in withholding
+    - You had side income with no withholding
+  </Accordion>
+
+  <Accordion title="What's the ideal refund amount?">
+    Ideally, your refund or amount owed should be close to $0. This means you neither gave the government an interest-free loan (large refund) nor underpaid taxes (amount owed). Most people prefer a small refund ($200-500) as a safety margin.
+  </Accordion>
+
+  <Accordion title="How do I adjust my withholding?">
+    Complete a new Form W-4 with your employer. If you got a large refund, you can reduce withholding by:
+    
+    - Increasing your standard deduction on Line 3
+    - Claiming more dependents on Line 4(a) (only if you actually have dependents)
+    - Entering additional income in Step 2
+    
+    If you owed money, do the opposite to increase withholding.
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+The command ends with these suggestions:
+
+```
+  NEXT STEPS:
+  → /ezfile:checklist     Step-by-step guide to file at freefilefillableforms.com
+  → /ezfile:explain AGI   Understand what any number means
+  → /ezfile:add-1098e     Add student loan interest (if not already added)
+```
+
+## Disclaimer
+
+<Warning>
+**Reminder**: EZFile is a calculation assistant. Review all numbers against your W-2 before filing. You are responsible for the accuracy of your return.
+</Warning>
+
+## Related Commands
+
+- [file-taxes](/commands/file-taxes) - Main command to calculate your return
+- [calculate](/commands/calculate) - Recalculate return after changes
+- [explain](/commands/explain) - Understand any line item or concept
+- [checklist](/commands/checklist) - Get step-by-step filing instructions

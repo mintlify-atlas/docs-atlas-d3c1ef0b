@@ -1,0 +1,95 @@
+---
+title: Who Can Use EZFile
+description: Supported tax situations and automatic disqualifiers
+---
+
+EZFile is designed for single W-2 filers with straightforward tax situations. If your situation is more complex, EZFile will recommend a CPA or full-service tax software.
+
+## Supported Profile
+
+ALL of the following must be true for EZFile to handle your return:
+
+<Check>Filing status: **Single** (not married, no domestic partner)</Check>
+<Check>**No children or dependents** of any kind</Check>
+<Check>Income: **W-2 wages only** (no 1099s, no self-employment, no investments)</Check>
+<Check>Housing: **Renter** (no mortgage, no property owned)</Check>
+<Check>Optional: Federal student loans with 1098-E</Check>
+<Check>Optional: Tips, overtime, or new car purchase (Schedule 1-A)</Check>
+
+## Automatic Disqualifiers
+
+If your situation includes ANY of the following, EZFile cannot process your return:
+
+<AccordionGroup>
+  <Accordion title="Family Situation">
+    - Spouse, partner, married, filing jointly
+    - Children, kids, dependents, child care, day care
+    - Head of Household (requires a qualifying dependent)
+    - Filing as Qualifying Surviving Spouse
+  </Accordion>
+
+  <Accordion title="Income Sources Beyond W-2">
+    - 1099-NEC, 1099-MISC (freelance, gig work, side hustle)
+    - 1099-INT, 1099-DIV (bank interest, dividends -- even small amounts)
+    - 1099-B (stock sales, crypto, capital gains)
+    - 1099-G (unemployment compensation)
+    - 1099-R (retirement distributions, pensions)
+    - 1099-SSA (Social Security benefits)
+    - Self-employment, sole proprietor, LLC, business
+    - Rental property income
+    - Alimony received
+    - Foreign income, FBAR, FATCA
+  </Accordion>
+
+  <Accordion title="Deduction Complexity">
+    - Itemized deductions
+    - Mortgage interest (Form 1098)
+    - Property tax
+    - Large charitable donations requiring itemization
+    - Medical expenses exceeding 7.5% of AGI
+    - Casualty/theft losses
+  </Accordion>
+
+  <Accordion title="Other Complex Situations">
+    - Multiple states (worked in different states during year)
+    - Part-year resident in any state
+    - Alternative Minimum Tax (AMT) likely
+    - Prior year carryforwards (capital losses, NOLs)
+    - Estimated tax payments made during the year
+    - IRS installment agreement or tax debt
+  </Accordion>
+</AccordionGroup>
+
+## What Happens If I'm Disqualified?
+
+If EZFile detects a disqualifier, you'll receive a message like this:
+
+<Warning>
+**I appreciate you using EZFile, but your situation includes [specific thing] which is outside what I'm built to handle.**
+
+EZFile is specifically designed for single W-2 filers with no dependents. For [your specific situation], I'd recommend:
+
+1. **FreeTaxUSA** (https://www.freetaxusa.com/) -- Free federal filing, $14.99 state
+2. **IRS Free File** (https://www.irs.gov/filing/free-file-do-your-federal-taxes-for-free) -- Free if AGI ≤ $84,000
+3. **A CPA or Enrolled Agent** -- Best for complex situations
+
+Your W-2 data stays on your local machine and has not been transmitted anywhere.
+</Warning>
+
+## Supported Tax Features
+
+| Feature | Supported |
+|---|---|
+| W-2 wage income | Yes |
+| Standard deduction | Yes |
+| Student loan interest (1098-E) | Yes |
+| Schedule 1-A (tips, overtime, car loan, senior) | Yes |
+| Form 1040 | Yes |
+| Form 1040-SR (seniors) | Yes |
+| Saver's Credit | Yes |
+| Earned Income Credit (no children) | Yes |
+| State returns (50 states + DC, PR, USVI) | Yes |
+
+<Note>
+EZFile is specifically built for the 2025 tax year. All calculations, thresholds, and deductions use 2025 IRS values.
+</Note>

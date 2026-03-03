@@ -1,0 +1,227 @@
+---
+title: State Taxes
+description: Overview of state tax handling for all 50 states plus DC and territories
+---
+
+EZFile supports state tax calculations for all 50 states, Washington DC, and US territories (Puerto Rico, US Virgin Islands). This guide explains how state taxes work and what to expect.
+
+## How State Taxes Work
+
+### W-2 Boxes for State Tax
+
+| Box | Description |
+|---|---|
+| Box 15 | State and state ID number |
+| Box 16 | State wages, tips, etc. |
+| Box 17 | State income tax withheld |
+| Box 18 | Local wages (if applicable) |
+| Box 19 | Local tax withheld (if applicable) |
+| Box 20 | Locality name or code |
+
+<Note>
+State wages (Box 16) often differ from federal wages (Box 1) because states have different rules for what counts as taxable income.
+</Note>
+
+## States With No Income Tax
+
+The following states do not levy state income tax on wages:
+
+<CardGroup cols={3}>
+  <Card title="Alaska" icon="location-dot">AK</Card>
+  <Card title="Florida" icon="location-dot">FL</Card>
+  <Card title="Nevada" icon="location-dot">NV</Card>
+  <Card title="New Hampshire" icon="location-dot">NH</Card>
+  <Card title="South Dakota" icon="location-dot">SD</Card>
+  <Card title="Tennessee" icon="location-dot">TN</Card>
+  <Card title="Texas" icon="location-dot">TX</Card>
+  <Card title="Washington" icon="location-dot">WA</Card>
+  <Card title="Wyoming" icon="location-dot">WY</Card>
+</CardGroup>
+
+<Info>
+If you live in one of these states, you only need to file a federal return -- no state paperwork required.
+</Info>
+
+## States With Income Tax
+
+EZFile provides detailed calculations for all income tax states. State tax systems vary widely:
+
+### Common State Tax Structures
+
+<Tabs>
+  <Tab title="Flat Rate States">
+    These states apply a single tax rate to all income:
+    
+    | State | Rate (2025) |
+    |---|---|
+    | Colorado | 4.40% |
+    | Illinois | 4.95% |
+    | Indiana | 3.05% |
+    | Kentucky | 4.50% |
+    | Michigan | 4.25% |
+    | North Carolina | 4.50% |
+    | Pennsylvania | 3.07% |
+    | Utah | 4.65% |
+  </Tab>
+  
+  <Tab title="Progressive Brackets">
+    These states have multiple tax brackets (like federal):
+    
+    - California (up to 13.30%)
+    - New York (up to 10.90%)
+    - New Jersey (up to 10.75%)
+    - Hawaii (up to 11.00%)
+    - Minnesota (up to 9.85%)
+    - Oregon (up to 9.90%)
+    - Wisconsin (up to 7.65%)
+    - Iowa (up to 6.00%)
+    - And many others
+  </Tab>
+  
+  <Tab title="Special Cases">
+    Some states have unique rules:
+    
+    **Pennsylvania**: Taxes retirement contributions (Box 16 > Box 1)
+    
+    **New Hampshire**: Previously taxed interest/dividends (repealed 2025)
+    
+    **Tennessee**: Previously taxed interest/dividends (repealed 2021)
+  </Tab>
+</Tabs>
+
+## State Deductions and Credits
+
+### Standard Deduction
+
+Most states with income tax offer a standard deduction, but amounts vary:
+
+- Some mirror the federal deduction
+- Some have their own fixed amounts
+- Some (like PA) have no standard deduction at all
+
+### Student Loan Interest
+
+<Warning>
+Most states do NOT allow a student loan interest deduction at the state level, even if you claimed it federally.
+</Warning>
+
+### Schedule 1-A Deductions
+
+The 2025 Schedule 1-A deductions (tips, overtime, car loan, senior) are federal-only. States do not conform to these deductions.
+
+## Local Taxes
+
+Some states have local income taxes in addition to state tax:
+
+<AccordionGroup>
+  <Accordion title="Pennsylvania" icon="building-columns">
+    Nearly all PA municipalities levy an Earned Income Tax (EIT):
+    - Pittsburgh: 3.0% (1% city + 2% school district)
+    - Philadelphia: 3.75% resident rate
+    - Most other PA localities: 1.0% - 2.0%
+    
+    Look at W-2 Box 18-20 for local tax info.
+  </Accordion>
+  
+  <Accordion title="Ohio" icon="building-columns">
+    Many OH cities levy local income tax:
+    - Columbus: 2.5%
+    - Cleveland: 2.5%
+    - Cincinnati: 2.1%
+    
+    Varies by municipality.
+  </Accordion>
+  
+  <Accordion title="Other States" icon="building-columns">
+    A few other states (like Maryland, Kentucky, Indiana) have county-level income taxes. EZFile will detect these from W-2 Box 18-20.
+  </Accordion>
+</AccordionGroup>
+
+## How EZFile Handles State Taxes
+
+<Steps>
+  <Step title="Detect your state">
+    EZFile reads Box 15 from your W-2 to determine your state
+  </Step>
+  
+  <Step title="Calculate state tax">
+    Using state-specific rules, EZFile calculates:
+    - State taxable income (Box 16)
+    - State tax owed
+    - State refund or amount owed
+  </Step>
+  
+  <Step title="Calculate local tax">
+    If Box 18-20 show local tax, EZFile calculates local refund/owed
+  </Step>
+  
+  <Step title="Provide filing guidance">
+    EZFile tells you where to file your state return (often available through state e-file or Free File)
+  </Step>
+</Steps>
+
+## State-Specific Resources
+
+EZFile has detailed reference files for all states. Use `/ezfile:explain <state name> taxes` to learn about your specific state.
+
+### Popular State References
+
+<CardGroup cols={2}>
+  <Card title="California" icon="file-lines">
+    Progressive brackets, state standard deduction, CA tax credits
+  </Card>
+  <Card title="New York" icon="file-lines">
+    Progressive brackets, NYC additional tax, state credits
+  </Card>
+  <Card title="Pennsylvania" icon="file-lines">
+    Flat 3.07% rate, no standard deduction, local EIT taxes
+  </Card>
+  <Card title="Texas" icon="file-lines">
+    No state income tax -- federal only
+  </Card>
+</CardGroup>
+
+## Common Questions
+
+<AccordionGroup>
+  <Accordion title="Why are my state wages different from federal wages?">
+    States have different rules for taxable income:
+    - PA taxes retirement contributions (401k, 403b)
+    - Some states exclude military pay
+    - Some states have different treatment of benefits
+    
+    This is why Box 16 ≠ Box 1.
+  </Accordion>
+  
+  <Accordion title="Do I file my state return at Free File Fillable Forms?">
+    No. Free File Fillable Forms is federal-only. Most states offer their own e-file system:
+    - Visit your state's revenue or taxation website
+    - Look for "e-file" or "online filing"
+    - Many states participate in the IRS Free File program
+  </Accordion>
+  
+  <Accordion title="What if I worked in multiple states?">
+    EZFile does not support multiple states. If you have W-2s from different states, you'll need:
+    - A CPA or enrolled agent
+    - Or full-service tax software like TurboTax or H&R Block
+  </Accordion>
+  
+  <Accordion title="What if Box 17 is $0 but I owe state tax?">
+    You'll need to pay when filing your state return. Make sure to file on time (typically April 15) to avoid penalties.
+  </Accordion>
+</AccordionGroup>
+
+## Supported States Summary
+
+EZFile supports all 50 states, DC, and territories:
+
+| Category | States/Territories |
+|---|---|
+| No income tax | AK, FL, NV, NH, SD, TN, TX, WA, WY |
+| Flat rate | CO, IL, IN, KY, MI, NC, PA, UT |
+| Progressive brackets | AL, AZ, AR, CA, CT, DE, GA, HI, IA, ID, KS, LA, MA, MD, ME, MN, MO, MS, MT, NE, NJ, NM, NY, ND, OH, OK, OR, RI, SC, VA, VT, WI, WV, DC |
+| Territories | PR, USVI |
+
+<Info>
+For detailed state-specific information, see the reference files in `reference/states/` or ask EZFile: `/ezfile:explain <state> taxes`
+</Info>
